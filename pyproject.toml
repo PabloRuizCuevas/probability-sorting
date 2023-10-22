@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "jupyter"
+version = "0.1.0"
+description = ""
+authors = ["<pablo.r.c@live.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python="==3.11.2"
+matplotlib = "^3.7.0"
+scipy = "^1.11.3"
+sympy = "^1.12"
+
+[tool.poetry.group.dev.dependencies]
+jupyterlab = "^3.6.1"
+black = "^23.1.0"
+isort = "^5.12.0"
+mypy = "^1.4.1"
+validate-pyproject = "^0.13"
+pre-commit = "^3.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+warn_return_any = "true"
+python_version = '3.11'
+disallow_untyped_defs = "true"
+disallow_incomplete_defs = "true"
+exclude = ['venv']
+
+[[tool.mypy.overrides]]
+module=[
+    'setuptools.*',
+    'matplotlib.*',
+]
+ignore_missing_imports='true'
