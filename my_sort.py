@@ -33,11 +33,12 @@ class StreamSort:
         plt.scatter(x, prob.astype(float))
         # plt.ylim([0,1])
         plt.xlabel('Number of buckets')
-        plt.ylabel('Probability of winning with best strategy')
+        plt.ylabel('OSR (Log Scale)')
+        plt.yscale('log')
         # plt.yticks(np.arange(0, 1, 0.1))
         plt.xticks(np.arange(0, 21, 1))
         plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-        plt.savefig(f'figures/osr{n=}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(f'figures/{self.__class__.__name__}_osr_{n}.png', dpi=300, bbox_inches='tight')
         plt.show()
 
     def plot_partition_tree(self, n = 20):
@@ -53,7 +54,7 @@ class StreamSort:
         plt.xticks(np.arange(0, 1.1, 0.1))
         plt.yticks(np.arange(0, n+1, 1))
         plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-        plt.savefig(f'figures/partition_tree{n=}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(f'figures/{self.__class__.__name__}_tree_{n}.png', dpi=300, bbox_inches='tight')
         plt.show()
 
 
@@ -74,7 +75,7 @@ class StreamSort:
         plt.title('$p_{nk}$ for 7 slots')
         plt.legend([f"$p_{{n{i}}}$" for i in range(1, n+1)])
         plt.grid(True)
-        plt.savefig(f'figures/strategy_domains_{n=}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(f'figures/{self.__class__.__name__}_domains_{n}.png', dpi=300, bbox_inches='tight')
         plt.show()
         
 
@@ -99,7 +100,7 @@ class StreamSort:
         plt.title('$P_{nk}$ OSR given $n_1$ placed in kth bucket')
         plt.legend([f"$n_1$ at slot k={i}" for i in range(1, n+1)])
         plt.grid(True)
-        plt.savefig(f'figures/strategy_domains_in_range{n=}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(f'figures/{self.__class__.__name__}_domains_in_range_{n}.png', dpi=300, bbox_inches='tight')
         plt.show()
         
 
