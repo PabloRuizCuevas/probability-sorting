@@ -20,34 +20,109 @@ def measure_disorder(arr):
     return average_distance, max_distance, median_distance
 
 
-def placeit(slots, idx, ni, direction=None):
-    if idx+direction in [-1, len(slots)]:
+def placeit_dir(slots, idx, ni, direction=None):
+    if idx in [-1, len(slots)]:
+        # reached the end of the array change direction
         direction=-direction
-    
+        idx = idx+2*direction
+
     if slots[idx] != 0:
-        slots = placeit(slots, idx+direction, ni, direction)
+        slots = placeit_dir(slots, idx+direction, ni, direction)
     else:
         slots[idx] = ni
     return slots
 
-def quasi_sort(arr, tresholds= None):
+
+def index_from_tresholds(tresholds, x):
+    # need to reimplement this with no for loop
+    for i, lim in enumerate(tresholds):
+        if x < lim:
+            return i
+    return len(tresholds)
+
+
+def quasi_sort_dir(arr, tresholds= None):
     ''' Uses thresholds to sort the array into slots, if slot occupied, 
     place in next  empsty slot'''
+    arr = np.array(arr)
     n = len(arr)
     slots = np.zeros(n)
     if tresholds is None:
         tresholds = InfinitesimalSort().thresholds(n)[1] 
 
     for ni in arr:
-        idx = [ i for i, v in enumerate(np.append([0],tresholds)) if v < ni][-1]
+        idx = index_from_tresholds(tresholds, ni)
+        #idx = [ i for i, v in enumerate(np.append([0],tresholds)) if v < ni][-1]
 
         if slots[idx] != 0:
-            if slots[idx] > ni:
-                direction = +1
-            else:
-                direction = -1
-            slots = placeit(slots, idx, ni, direction)
+            direction = 1 if ni > slots[idx] else -1
+            slots = placeit_dir(slots, idx+direction, ni, direction) # better pass idx+direction
         else:
             slots[idx] = ni
 
     return slots
+
+# what i think is the best algorithm
+
+def placeit(slots, idx, ni, direction):
+    # tries to place it in the allowed direction, if not possible, raises error
+    if idx in [-1, len(slots)]:
+        raise ValueError("Out of bounds")
+    if slots[idx] != 0:
+        if direction == 1 and slots[idx] < ni:
+            return placeit(slots, idx+direction, ni, direction)
+        elif direction == -1 and slots[idx] > ni:
+            return placeit(slots, idx-direction, ni, direction)
+        else:
+            raise ValueError("Cannot place")
+    else:
+        slots[idx] = ni
+        return slots
+    
+def quasi_sort(arr, tresholds= None):
+    ''' Uses thresholds to sort the array into slots, if slot occupied,'''
+    arr = np.array(arr)
+    n = len(arr)
+    slots = np.zeros(n)
+    if tresholds is None:
+        tresholds = InfinitesimalSort().thresholds(n)[1] 
+
+    for i, ni in enumerate(arr):
+        idx = index_from_tresholds(tresholds, ni)
+        if slots[idx] != 0:
+            direction = 1 if ni > slots[idx] else -1
+            try:
+                slots = placeit(slots, idx+direction, ni, direction)
+            except ValueError:
+                # fall here when it cannot place something
+                # so we try to sort the rest of the array in the empty slots
+                slots[slots == 0] = quasi_sort(arr[i:])
+                break
+        else:
+            slots[idx] = ni
+    return slots
+
+
+def plot_sort_analiysis(n, trials=500):
+    from matplotlib import pyplot as plt
+    my_random = np.random.uniform(0, 1, [trials, n])
+    tresholds = np.array(InfinitesimalSort().thresholds(n)[1] )
+    original_disorder = []
+    disorder_after_sort = []
+    disorder_after_sort_dir = []
+    for random in my_random:
+        original_disorder.append(np.mean(disorder(random)))
+        disorder_after_sort.append(np.mean(disorder(quasi_sort(random,tresholds))))
+        disorder_after_sort_dir.append(np.mean(disorder(quasi_sort_dir(random,tresholds))))
+        
+    kargs = {'alpha':0.5, 'density':True, 'bins':20, 'range':(0,3)}
+
+    plt.hist(original_disorder, label='original', **kargs)
+    plt.hist(disorder_after_sort, label='recursive', **kargs)
+    plt.hist(disorder_after_sort_dir, label='directional', **kargs)
+    plt.title('Mean disorder distribution after and before sorting')
+    plt.xlabel("Mean disorder")
+    plt.ylabel("Density")
+    plt.legend(loc='upper right')
+    plt.savefig(f'figures/plot_sort_analiysis_{n}.png', dpi=300, bbox_inches='tight')
+    plt.show()
