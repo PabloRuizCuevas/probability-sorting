@@ -62,7 +62,7 @@ def quasi_sort_dir(arr, tresholds= None):
 
     return slots
 
-# what i think is the best algorithm
+# almost the best algorithm, but still not aligned with theoretical best.
 
 def placeit(slots, idx, ni, direction):
     # tries to place it in the allowed direction, if not possible, raises error
@@ -72,7 +72,7 @@ def placeit(slots, idx, ni, direction):
         if direction == 1 and slots[idx] < ni:
             return placeit(slots, idx+direction, ni, direction)
         elif direction == -1 and slots[idx] > ni:
-            return placeit(slots, idx-direction, ni, direction)
+            return placeit(slots, idx+direction, ni, direction)
         else:
             raise ValueError("Cannot place")
     else:
@@ -103,6 +103,24 @@ def quasi_sort(arr, tresholds= None):
     return slots
 
 
+def best_quasi_sort(arr, tresholds= None, k = 1):
+    ''' Uses thresholds to sort the array into slots, if slot occupied,'''
+    arr = np.array(arr)
+    n = len(arr)
+    slots = np.zeros(n)
+    if tresholds is None:
+        tresholds = InfinitesimalSort().thresholds(n)[1] 
+
+    for i, ni in enumerate(arr):
+        idx = index_from_tresholds(tresholds, ni)
+        if slots[idx] != 0:
+            k = slots[idx]
+            slots[slots == 0] = best_quasi_sort(arr[i:], k=k)
+            break
+        else:
+            slots[idx] = ni
+    return slots
+
 def plot_sort_analiysis(n, trials=500):
     from matplotlib import pyplot as plt
     my_random = np.random.uniform(0, 1, [trials, n])
@@ -126,3 +144,14 @@ def plot_sort_analiysis(n, trials=500):
     plt.legend(loc='upper right')
     plt.savefig(f'figures/plot_sort_analiysis_{n}.png', dpi=300, bbox_inches='tight')
     plt.show()
+
+if __name__ == "__main__":
+    trials = 100
+    n = 3
+    my_random = np.random.uniform(0, 1, [trials, n])
+    tresholds = np.array(InfinitesimalSort().thresholds(n)[1] )
+    dis = []
+    for random in my_random:
+        dis.append(np.mean(disorder(best_quasi_sort(random, tresholds))))
+    dis = np.array(dis)
+    len(dis[dis==0])/trials
