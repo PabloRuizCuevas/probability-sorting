@@ -227,6 +227,27 @@ class DiscreteSort(StreamSort):
             sol = int(sol)
             I.append(sol)
         return B, I
+    
+
+def best_quasi_sort(arr: np.array, thresholds = None):
+    ''' Uses tthe best possible strategy to sort, it works with probability mP(n) 
+    otherwise it fails to sort'''
+    # if not isinstance(np.array, arr):
+    arr = np.array(arr)
+    n = len(arr)
+    slots = np.tile(nan,n)
+    if thresholds is None:
+        sorti = InfinitesimalSort()
+        thresholds = {i: sorti.thresholds(i)[1]  for i in range(n)}
+    for ni in arr:
+        sub, start, end = return_subarray(slots, ni)
+        if len(sub) == 0:
+            raise ValueError('No subarray found, not optimally sortable')
+        nip = (ni-start)/(end-start)    
+        idx = index_from_tresholds(thresholds[len(sub)], nip)
+        sub[idx] = ni
+    return slots
+
 
 
 if __name__ == "__main__":
