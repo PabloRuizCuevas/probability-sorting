@@ -1,5 +1,5 @@
 import numpy as np
-from my_sort import InfinitesimalSort
+from src.my_sort import InfinitesimalSort
 
 
 def disorder(arr):

@@ -227,18 +227,36 @@ class DiscreteSort(StreamSort):
             sol = int(sol)
             I.append(sol)
         return B, I
-    
+
+
+def index_from_tresholds(tresholds: np.array, x: float):
+    ''' returns the index of the tresholds where x is located'''
+    # need to reimplement this with no for loop
+    for i, lim in enumerate(tresholds):
+        if x < lim:
+            return i
+    return len(tresholds)
+
+
+def return_subarray(arr: np.array, n: float):
+    ''' returns the possible positions to place n in arr as well as the limits'''
+    tmp = np.append(np.append([0], arr), 1)
+    mini = np.argwhere(tmp<n)[-1][0]
+    maxi = np.argwhere(tmp>n)[0][0]
+    return arr[mini:maxi-1], tmp[mini], tmp[maxi]
+
 
 def best_quasi_sort(arr: np.array, thresholds = None):
     ''' Uses tthe best possible strategy to sort, it works with probability mP(n) 
-    otherwise it fails to sort'''
+    otherwise it fails to sort.
+    This is far from optimized code'''
     # if not isinstance(np.array, arr):
     arr = np.array(arr)
     n = len(arr)
-    slots = np.tile(nan,n)
+    slots = np.tile(np.nan, n)
     if thresholds is None:
         sorti = InfinitesimalSort()
-        thresholds = {i: sorti.thresholds(i)[1]  for i in range(n)}
+        thresholds = {i: sorti.thresholds(i)[1]  for i in range(n+1)}
     for ni in arr:
         sub, start, end = return_subarray(slots, ni)
         if len(sub) == 0:
