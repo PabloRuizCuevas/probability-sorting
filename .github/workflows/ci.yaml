@@ -25,7 +25,7 @@ jobs:
     
     - name: Install dependencies with Poetry
       run: |
-        poetry install --without docs
+        poetry install --without docs,test
 
     - name: Check code formatting with isort
       run: poetry run isort . --check-only
