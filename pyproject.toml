@@ -6,7 +6,7 @@ authors = ["<pablo.r.c@live.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python="==3.11.2"
+python="~3.11"
 matplotlib = "^3.7.0"
 scipy = "^1.11.3"
 sympy = "^1.12"
