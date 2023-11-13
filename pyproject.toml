@@ -2,7 +2,7 @@
 name = "jupyter"
 version = "0.1.0"
 description = ""
-authors = ["<pablo.r.c@live.com>"]
+authors = "pablo.r.c@live.com"
 readme = "README.md"
 
 [tool.poetry.dependencies]
