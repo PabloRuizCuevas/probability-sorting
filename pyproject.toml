@@ -15,12 +15,15 @@ ipytest = "^0.13.3"
 pytest = "^7.4.3"
 
 [tool.poetry.group.dev.dependencies]
-jupyterlab = "^3.6.1"
 black = "^23.1.0"
 isort = "^5.12.0"
 mypy = "^1.4.1"
 validate-pyproject = "^0.13"
 pre-commit = "^3.3.3"
+
+[tool.poetry.group.dev2.dependencies]
+jupyterlab = "^3.6.1"
+
 
 [build-system]
 requires = ["poetry-core"]
