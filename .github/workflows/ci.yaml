@@ -12,17 +12,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: "3.11"
 
-    - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python -
-    
+    - uses: Gr1N/setup-poetry@v8
+
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pypoetry/virtualenvs
+        key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+        
+    - run: poetry --version
+  
     - name: Install dependencies with Poetry
       run: |
         poetry install 
