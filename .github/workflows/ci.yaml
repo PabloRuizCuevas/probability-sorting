@@ -1,0 +1,40 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python -
+
+    - name: Install dependencies with Poetry
+      run: |
+        poetry install
+
+    - name: Check code formatting with isort
+      run: poetry run isort . --check-only
+
+    - name: Check code formatting with black
+      run: poetry run black . --check
+
+    - name: Type-check with mypy
+      run: poetry run mypy src 
+
+    - name: Run pytest
+      run: poetry run pytest

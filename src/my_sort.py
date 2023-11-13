@@ -1,42 +1,49 @@
 import sys
 from functools import lru_cache
 from math import comb
+from typing import TypeAlias
 
 import numpy as np
-from sympy import Interval, Rational, Sum, Symbol
-from sympy import integrate
+import numpy.typing as npt
+from sympy import Expr, Interval, Rational, Sum, Symbol
 from sympy import integrate as ʃ
 from sympy import simplify, solve
 from sympy.stats import Binomial, density
 
-from src.my_sort import StreamSort
+from src.plots import StreamSort
 
 sys.set_int_max_str_digits(0)
 
 n1 = Symbol("n1", domain=Interval(0, 1))
 
+FArray: TypeAlias = npt.NDArray[np.float64]
+
 
 class InfinitesimalSort(StreamSort):
-    def __init__(self, rational=False):
+    def __init__(self, rational: bool = False):
         self.maxi = 1
         self.rational = rational
 
     @lru_cache
-    def mP(self, n=1):
+    def mP(self, n: int = 1) -> float | Rational:
         # if n> 9  better using rational = False, otherwise it takes ages
         # as the integrals are symbolic and makes gdc of very large fractions
         # further optimization can be achieved by using symetry, as the inthegral
         # evaluate symetrically in the array.
+        probability: float | Rational
         if n in [0, 1, 2]:
-            return [1, 1, Rational(3, 4)][n]
-
-        B, I = self.thresholds(n)
-        I = [0] + I + [1]
-        # maybe a base transformation avoid the gdc as well
-        return sum([ʃ(B[i], (n1, Interval(I[i], I[i + 1]))) for i in range(n)])
+            probability = [1, 1, Rational(3, 4)][n]
+        else:
+            B, I = self.thresholds(n)
+            I = [0] + I + [1]
+            # maybe a base transformation avoid the gdc as well
+            probability = sum(
+                [ʃ(B[i], (n1, Interval(I[i], I[i + 1]))) for i in range(n)]
+            )
+        return probability
 
     @lru_cache
-    def p_distributions(self, n):
+    def p_distributions(self, n: int) -> list[Expr]:
         # n is the number of boxes
         result = [
             self.binomial(n - 1, i) * self.mP(n - 1 - i) * self.mP(i) for i in range(n)
@@ -46,21 +53,23 @@ class InfinitesimalSort(StreamSort):
         return [r.evalf() for r in result]
 
     @staticmethod
-    def binomial(n, k):  # n successes over k trials
+    def binomial(n: int, k: int) -> Expr:  # n successes over k trials
         # faster that using sympy Binomial
         # n1 is prob of success tha is integrated latter
-        return comb(n, k) * (1 - n1) ** (n - k) * n1 ** (k)
+        sol: Expr = comb(n, k) * (1 - n1) ** (n - k) * n1 ** (k)
+        return sol
 
     @lru_cache
-    def binomial2(n, k):
+    def binomial2(n: int, k: int) -> Expr:
         # this way slower but more sympy :)
-        return density(Binomial("X", n, n1))(k)
+        sol: Expr = density(Binomial("X", n, n1))(k)
+        return sol
 
-    def naive_thresholds(self, n):
+    def naive_thresholds(self, n: int) -> FArray:
         # naive version of thesholds
         return np.linspace(0, 1, n - 1)
 
-    def thresholds(self, n):
+    def thresholds(self, n: int) -> tuple[list[Expr], list[float]]:
         # need to take out p_distributions for lru cache, which may be important
         B = self.p_distributions(n)
         I = []
@@ -71,20 +80,11 @@ class InfinitesimalSort(StreamSort):
             I.append(sol)
         return B, I
 
-    def normalization(self, n):
-        # todo, but will serves to normalize real use cases
-        n = 458
-        maxi = 473
-        mini = 0
-        elements = 9
-        print(n - mini)
-        (np.array(self.thresholds(elements)) * (maxi - mini)).astype(int)
-
 
 class NaiveInfinitesimalSort(InfinitesimalSort):
     """The naive version of infinitesimal sort, it turns out to be quite good, but ofc not optimal"""
 
-    def thresholds(self, n):
+    def thresholds(self, n: int) -> tuple[list[Expr], list[float]]:
         # need to take out p_distributions for lru cache, which may be important
         B = self.p_distributions(n)
         I2 = list(np.linspace(0, 1, n + 1)[1:-1])
@@ -98,39 +98,43 @@ class NaiveInfinitesimalSort(InfinitesimalSort):
 class DiscreteSort(StreamSort):
     """it is still bad as maxi should be dinamically calculated"""
 
-    def __init__(self, maxi=1000, rational=False):
+    def __init__(self, maxi: int = 1000, rational: bool = False):
         self.maxi = maxi
         self.rational = rational
 
-    def binomial(self, n, k):
+    def binomial(self, n: int, k: int) -> Expr:
         # faster that using sympy Binomial
 
         # maybe something like n1/(self.maxi - n2?)
-        return comb(n, k) * (1 - n1 / self.maxi) ** (n - k) * (n1 / self.maxi) ** (k)
+        sol: Expr = (
+            comb(n, k) * (1 - n1 / self.maxi) ** (n - k) * (n1 / self.maxi) ** (k)
+        )
+        return sol
 
     @lru_cache
-    def mP(self, n=1):
+    def mP(self, n: int = 1) -> float | Rational:
         if n in [0, 1]:
             return [1, 1][n]
 
         B, I = self.thresholds(n)
         I = [0] + I + [self.maxi]
-        return simplify(
+        sol: float | Rational = simplify(
             sum([Sum(B[i], (n1, I[i] + 1, I[i + 1])) for i in range(n)]) / self.maxi
-        )
+        )  # type: ignore
+        return sol
 
     @lru_cache
-    def p_distributions(self, n):
+    def p_distributions(self, n: int) -> list[Expr]:
         # n is the number of boxes
         result = [
             self.binomial(n - 1, i) * self.mP(n - 1 - i) * self.mP(i) for i in range(n)
         ]
         if self.rational:  # not sure if needed anymore
             return result
-        return [simplify(r).evalf() for r in result]
+        return [simplify(r).evalf() for r in result]  # type: ignore
 
     @lru_cache
-    def thresholds(self, n):
+    def thresholds(self, n: int) -> tuple[list[Expr], list[float]]:
         B = self.p_distributions(n)
         I = []
         for i in range(0, n - 1):
@@ -142,7 +146,7 @@ class DiscreteSort(StreamSort):
         return B, I
 
 
-def index_from_thresholds(tresholds: np.array, x: float):
+def index_from_thresholds(tresholds: list[float], x: float) -> int:
     """returns the index of the tresholds where x is located"""
     # need to reimplement this with no for loop
     for i, lim in enumerate(tresholds):
@@ -151,7 +155,7 @@ def index_from_thresholds(tresholds: np.array, x: float):
     return len(tresholds)
 
 
-def return_subarray(arr: np.array, n: float):
+def return_subarray(arr: FArray, n: float) -> tuple[FArray, float, float]:
     """returns the possible positions to place n in arr as well as the limits"""
     tmp = np.append(np.append([0], arr), 1)
     mini = np.argwhere(tmp < n)[-1][0]
@@ -159,7 +163,9 @@ def return_subarray(arr: np.array, n: float):
     return arr[mini : maxi - 1], tmp[mini], tmp[maxi]
 
 
-def best_quasi_sort(arr: np.array, thresholds=None):
+def best_quasi_sort(
+    arr: FArray, thresholds: dict[int, list[float]] | None = None
+) -> FArray:
     """Uses tthe best possible strategy to sort, it works with probability mP(n)
     otherwise it fails to sort.
     This is far from optimized code"""
@@ -170,6 +176,7 @@ def best_quasi_sort(arr: np.array, thresholds=None):
     if thresholds is None:
         sorti = InfinitesimalSort()
         thresholds = {i: sorti.thresholds(i)[1] for i in range(n + 1)}
+
     for ni in arr:
         sub, start, end = return_subarray(slots, ni)
         if len(sub) == 0:

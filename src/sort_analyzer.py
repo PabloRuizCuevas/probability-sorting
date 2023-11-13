@@ -3,7 +3,7 @@ import numpy as np
 from src.my_sort import InfinitesimalSort
 
 
-def disorder(arr):
+def disorder(arr: np.array):
     # Sort the array and create a mapping from value to its sorted position
     sorted_positions = {value: idx for idx, value in enumerate(sorted(arr))}
 
@@ -11,7 +11,7 @@ def disorder(arr):
     return [abs(idx - sorted_positions[value]) for idx, value in enumerate(arr)]
 
 
-def measure_disorder(arr):
+def measure_disorder(arr) -> tuple[float, float, float]:
     distances = disorder(arr)
     # Calculate average, max, and median distance
     average_distance = np.mean(distances)
@@ -21,7 +21,9 @@ def measure_disorder(arr):
     return average_distance, max_distance, median_distance
 
 
-def placeit_dir(slots, idx, ni, direction=None):
+def placeit_dir(
+    slots: np.array, idx: int, ni: float, direction: int = None
+) -> np.array:
     if idx in [-1, len(slots)]:
         # reached the end of the array change direction
         direction = -direction
@@ -34,7 +36,7 @@ def placeit_dir(slots, idx, ni, direction=None):
     return slots
 
 
-def index_from_thresholds(tresholds, x):
+def index_from_thresholds(tresholds, x: float):
     # need to reimplement this with no for loop
     for i, lim in enumerate(tresholds):
         if x < lim:
@@ -42,7 +44,7 @@ def index_from_thresholds(tresholds, x):
     return len(tresholds)
 
 
-def quasi_sort_dir(arr, tresholds=None):
+def quasi_sort_dir(arr: np.array, tresholds=None):
     """Uses thresholds to sort the array into slots, if slot occupied,
     place in next  empsty slot"""
     arr = np.array(arr)
@@ -69,7 +71,7 @@ def quasi_sort_dir(arr, tresholds=None):
 # almost the best algorithm, but still not aligned with theoretical best.
 
 
-def placeit(slots, idx, ni, direction):
+def placeit(slots: np.array, idx: int, ni: float, direction: int):
     # tries to place it in the allowed direction, if not possible, raises error
     if idx in [-1, len(slots)]:
         raise ValueError("Out of bounds")
@@ -85,7 +87,7 @@ def placeit(slots, idx, ni, direction):
         return slots
 
 
-def quasi_sort(arr, tresholds=None):
+def quasi_sort(arr: np.array, tresholds=None):
     """Uses thresholds to sort the array into slots, if slot occupied,"""
     arr = np.array(arr)
     n = len(arr)
@@ -109,7 +111,7 @@ def quasi_sort(arr, tresholds=None):
     return slots
 
 
-def best_quasi_sort(arr, tresholds=None, k=1):
+def best_quasi_sort(arr: np.array, tresholds: np.array = None, k: int = 1):
     """Uses thresholds to sort the array into slots, if slot occupied,"""
     arr = np.array(arr)
     n = len(arr)
@@ -118,7 +120,7 @@ def best_quasi_sort(arr, tresholds=None, k=1):
         tresholds = InfinitesimalSort().thresholds(n)[1]
 
     for i, ni in enumerate(arr):
-        idx = index_from_tresholds(tresholds, ni)
+        idx = index_from_thresholds(tresholds, ni)
         if slots[idx] != 0:
             k = slots[idx]
             slots[slots == 0] = best_quasi_sort(arr[i:], k=k)
@@ -128,7 +130,7 @@ def best_quasi_sort(arr, tresholds=None, k=1):
     return slots
 
 
-def plot_sort_analiysis(n, trials=500):
+def plot_sort_analiysis(n: int, trials: int = 500):
     from matplotlib import pyplot as plt
 
     my_random = np.random.uniform(0, 1, [trials, n])

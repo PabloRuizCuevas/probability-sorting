@@ -37,5 +37,6 @@ exclude = ['venv']
 module=[
     'setuptools.*',
     'matplotlib.*',
+    'plots.*',
 ]
 ignore_missing_imports='true'
