@@ -20,6 +20,7 @@ FArray: TypeAlias = npt.NDArray[np.float64]
 
 
 class InfinitesimalSort(StreamSort):
+    """This is the optimal sort, in the continuous case"""
     def __init__(self, rational: bool = False):
         self.maxi = 1
         self.rational = rational
