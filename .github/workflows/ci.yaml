@@ -38,7 +38,7 @@ jobs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
     - name: Install dependencies with Poetry
       run: |
-        poetry install --without dev2
+        poetry install --without lab
 
     - name: Check code formatting with isort
       run: poetry run isort . --check-only

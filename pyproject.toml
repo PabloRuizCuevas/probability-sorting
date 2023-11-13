@@ -21,7 +21,7 @@ mypy = "^1.4.1"
 validate-pyproject = "^0.13"
 pre-commit = "^3.3.3"
 
-[tool.poetry.group.dev2.dependencies]
+[tool.poetry.group.lab.dependencies]
 jupyterlab = "^3.6.1"
 
 
