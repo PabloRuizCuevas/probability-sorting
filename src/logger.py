@@ -1,29 +1,27 @@
-from functools import wraps
-from typing import Any, Callable
-from typing import TypeVar, Type
-
-T = TypeVar('T')
-
-
-def log_method_call(method: Callable) -> Callable:
-    """Decorator to log method calls."""
-
-    @wraps(method)
-    def wrapper(*args: Any, **kwargs: Any) -> Any:
-        print(
-            f"Calling method {method.__name__} with args {args[1:]} and kwargs {kwargs}"
-        )
-        return method(*args, **kwargs)
-
-    return wrapper
+from typing import Type, Any, Callable
 
 
 class LoggingMeta(type):
     """Metaclass that logs method calls."""
 
-    def __new__(cls: Type[T], name: str, bases: tuple, dct: dict[str, Any]) -> T:
+    def __new__(
+        cls: Type["LoggingMeta"],
+        name: str,
+        bases: tuple[Type, ...],
+        dct: dict[str, Any],
+    ) -> "LoggingMeta":
         # Iterate over items in the class dictionary
         for attr_name, attr_value in dct.items():
-            if callable(attr_value):
-                dct[attr_name] = log_method_call(attr_value)
+            if callable(attr_value) and not isinstance(attr_value, staticmethod):
+                dct[attr_name] = cls.log_method_call(attr_value)
         return super().__new__(cls, name, bases, dct)
+
+    @staticmethod
+    def log_method_call(method: Callable) -> Callable:
+        """Wraps a method to log its calls."""
+
+        def wrapper(*args: Any, **kwargs: dict[str, Any]) -> Any:
+            print(f"Calling {method.__name__}")
+            return method(*args, **kwargs)
+
+        return wrapper

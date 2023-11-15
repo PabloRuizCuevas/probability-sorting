@@ -112,7 +112,9 @@ def quasi_sort(arr: FArray, thresholds: list[float] | None = None) -> FArray:
     return slots
 
 
-def best_quasi_sort(arr: FArray, thresholds: list[float] | None = None, k: int = 1) -> FArray:
+def best_quasi_sort(
+    arr: FArray, thresholds: list[float] | None = None, k: int = 1
+) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied,"""
     arr = np.array(arr)
     n = len(arr)

@@ -4,16 +4,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sympy import Interval, Symbol, lambdify, Expr, Rational
 from functools import lru_cache
+from typing import Any
 
 n1 = Symbol("n1", domain=Interval(0, 1))  # better not here
 
 
-
 class StreamSort(metaclass=ABCMeta):
-
     @abstractmethod
-    @lru_cache
-    def thresholds(self, n: int) -> tuple[list[Expr], list[float]]:
+    def thresholds(self, n: int) -> tuple[list[Expr], list[Any]]:
         ...
 
     @abstractmethod
@@ -45,7 +43,7 @@ class StreamSort(metaclass=ABCMeta):
         )
         plt.show()
 
-    def plot_partition_tree(self, n:int=20) -> None:
+    def plot_partition_tree(self, n: int = 20) -> None:
         # plot the partition tree from 1 to  n buckets
         plt.figure(figsize=(10, 6))
         for i in range(1, n + 1):
@@ -89,7 +87,7 @@ class StreamSort(metaclass=ABCMeta):
         )
         plt.show()
 
-    def plot_strategy_domains_at_optimal_range(self, n:int) -> None:
+    def plot_strategy_domains_at_optimal_range(self, n: int) -> None:
         # Convert symbolic expressions to numerical functions
         functions, ranges = self.thresholds(n)
         numerical_funcs = [lambdify(n1, func, "numpy") for func in functions]

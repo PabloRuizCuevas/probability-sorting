@@ -133,7 +133,6 @@ class DiscreteSort(StreamSort):
             return result
         return [simplify(r).evalf() for r in result]  # type: ignore
 
-
     def thresholds(self, n: int) -> tuple[list[Expr], list[int]]:
         B = self.p_distributions(n)
         I = []
