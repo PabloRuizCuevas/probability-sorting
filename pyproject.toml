@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "jupyter"
+name = "SOPA"
 version = "0.1.0"
-description = ""
-authors = [<pablo.r.c@live.com>]
+description = "SOPA Algorithm, best possible probability sorting Algorithm"
+authors = ["pablo.r.c@live.com"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

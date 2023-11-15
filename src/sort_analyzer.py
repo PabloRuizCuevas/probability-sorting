@@ -1,9 +1,11 @@
 import numpy as np
-
+import numpy.typing as npt
 from src.my_sort import InfinitesimalSort
 
+FArray: TypeAlias = npt.NDArray[np.float64]
 
-def disorder(arr: np.array):
+
+def disorder(arr: FArray) -> FArray:
     # Sort the array and create a mapping from value to its sorted position
     sorted_positions = {value: idx for idx, value in enumerate(sorted(arr))}
 
@@ -11,7 +13,7 @@ def disorder(arr: np.array):
     return [abs(idx - sorted_positions[value]) for idx, value in enumerate(arr)]
 
 
-def measure_disorder(arr) -> tuple[float, float, float]:
+def measure_disorder(arr: FArray) -> tuple[float, float, float]:
     distances = disorder(arr)
     # Calculate average, max, and median distance
     average_distance = np.mean(distances)
@@ -21,9 +23,7 @@ def measure_disorder(arr) -> tuple[float, float, float]:
     return average_distance, max_distance, median_distance
 
 
-def placeit_dir(
-    slots: np.array, idx: int, ni: float, direction: int = None
-) -> np.array:
+def placeit_dir(slots: FArray, idx: int, ni: float, direction: int = None) -> FArray:
     if idx in [-1, len(slots)]:
         # reached the end of the array change direction
         direction = -direction
@@ -36,7 +36,7 @@ def placeit_dir(
     return slots
 
 
-def index_from_thresholds(tresholds, x: float):
+def index_from_thresholds(tresholds: FArray, x: float) -> int:
     # need to reimplement this with no for loop
     for i, lim in enumerate(tresholds):
         if x < lim:
@@ -44,7 +44,7 @@ def index_from_thresholds(tresholds, x: float):
     return len(tresholds)
 
 
-def quasi_sort_dir(arr: np.array, tresholds=None):
+def quasi_sort_dir(arr: FArray, tresholds: FArray = None) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied,
     place in next  empsty slot"""
     arr = np.array(arr)
@@ -71,7 +71,7 @@ def quasi_sort_dir(arr: np.array, tresholds=None):
 # almost the best algorithm, but still not aligned with theoretical best.
 
 
-def placeit(slots: np.array, idx: int, ni: float, direction: int):
+def placeit(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
     # tries to place it in the allowed direction, if not possible, raises error
     if idx in [-1, len(slots)]:
         raise ValueError("Out of bounds")
@@ -87,7 +87,7 @@ def placeit(slots: np.array, idx: int, ni: float, direction: int):
         return slots
 
 
-def quasi_sort(arr: np.array, tresholds=None):
+def quasi_sort(arr: FArray, tresholds: int | None = None) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied,"""
     arr = np.array(arr)
     n = len(arr)
@@ -111,7 +111,7 @@ def quasi_sort(arr: np.array, tresholds=None):
     return slots
 
 
-def best_quasi_sort(arr: np.array, tresholds: np.array = None, k: int = 1):
+def best_quasi_sort(arr: FArray, tresholds: FArray = None, k: int = 1) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied,"""
     arr = np.array(arr)
     n = len(arr)
@@ -130,7 +130,7 @@ def best_quasi_sort(arr: np.array, tresholds: np.array = None, k: int = 1):
     return slots
 
 
-def plot_sort_analiysis(n: int, trials: int = 500):
+def plot_sort_analiysis(n: int, trials: int = 500) -> None:
     from matplotlib import pyplot as plt
 
     my_random = np.random.uniform(0, 1, [trials, n])

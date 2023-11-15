@@ -3,6 +3,7 @@ import numpy as np
 import pytest
 
 from src.my_sort import InfinitesimalSort, best_quasi_sort, return_subarray
+FArray: TypeAlias = npt.NDArray[np.float64]
 
 optimal = InfinitesimalSort()
 nan = np.nan
@@ -17,7 +18,8 @@ test_cases = [
 
 
 @pytest.mark.parametrize("test_input, threshold, expected, mini, maxi", test_cases)
-def test_return_subarray(test_input, threshold, expected, mini, maxi):
+def test_return_subarray(test_input: list[float], threshold: float, expected: list[float], 
+                         mini: float, maxi: float) -> None:
     test_input = np.array(test_input)
     expected = np.array(expected)
     subarray, smini, smaxi = return_subarray(test_input, threshold)
@@ -30,7 +32,7 @@ sort_cases = [([0.1406, 0.4243, 0.967, 0.334], [0.1406, 0.334, 0.4243, 0.967])]
 
 
 @pytest.mark.parametrize("array, arr_sorted", sort_cases)
-def test_sorting(array, arr_sorted):
+def test_sorting(array: list[float], arr_sorted: list[float]):
     array = np.array(array)
     arr_sorted = np.array(arr_sorted)
     sorti = InfinitesimalSort()
@@ -42,7 +44,7 @@ sort_cases2 = [([0.1406, 0.4243, 0.967, 0.334], [0.1406, 0.334, 0.4243, 0.967])]
 
 
 @pytest.mark.parametrize("array, arr_sorted", sort_cases2)
-def test_sorting_2(array, arr_sorted):
+def test_sorting_2(array: list[float], arr_sorted: list[float]) -> None:
     array = np.array(array)
     arr_sorted = np.array(arr_sorted)
     assert np.array_equal(best_quasi_sort(array), arr_sorted)
@@ -52,7 +54,7 @@ sort_cases = [([0.1406, 0.4243, 0.967, 0.534], [0.1406, 0.4243, 0.534, 0.967])]
 
 
 @pytest.mark.parametrize("array, arr_sorted", sort_cases)
-def test_not_sortable(array, arr_sorted):
+def test_not_sortable(array: list[float], arr_sorted: list[float]) -> None:
     array = np.array(array)
     arr_sorted = np.array(arr_sorted)
     sorti = InfinitesimalSort()
