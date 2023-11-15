@@ -1,11 +1,12 @@
 import numpy as np
 import numpy.typing as npt
+from typing import TypeAlias, Any
 from src.my_sort import InfinitesimalSort
 
 FArray: TypeAlias = npt.NDArray[np.float64]
 
 
-def disorder(arr: FArray) -> FArray:
+def disorder(arr: FArray) -> list[float]:
     # Sort the array and create a mapping from value to its sorted position
     sorted_positions = {value: idx for idx, value in enumerate(sorted(arr))}
 
@@ -16,14 +17,14 @@ def disorder(arr: FArray) -> FArray:
 def measure_disorder(arr: FArray) -> tuple[float, float, float]:
     distances = disorder(arr)
     # Calculate average, max, and median distance
-    average_distance = np.mean(distances)
-    max_distance = np.max(distances)
-    median_distance = np.median(distances)
+    average_distance = float(np.mean(distances))
+    max_distance = float(np.max(distances))
+    median_distance = float(np.median(distances))
 
     return average_distance, max_distance, median_distance
 
 
-def placeit_dir(slots: FArray, idx: int, ni: float, direction: int = None) -> FArray:
+def placeit_dir(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
     if idx in [-1, len(slots)]:
         # reached the end of the array change direction
         direction = -direction
@@ -36,25 +37,25 @@ def placeit_dir(slots: FArray, idx: int, ni: float, direction: int = None) -> FA
     return slots
 
 
-def index_from_thresholds(tresholds: FArray, x: float) -> int:
+def index_from_thresholds(thresholds: list[float], x: float) -> int:
     # need to reimplement this with no for loop
-    for i, lim in enumerate(tresholds):
+    for i, lim in enumerate(thresholds):
         if x < lim:
             return i
-    return len(tresholds)
+    return len(thresholds)
 
 
-def quasi_sort_dir(arr: FArray, tresholds: FArray = None) -> FArray:
+def quasi_sort_dir(arr: FArray, thresholds: list[float] | None = None) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied,
     place in next  empsty slot"""
     arr = np.array(arr)
     n = len(arr)
     slots = np.zeros(n)
-    if tresholds is None:
-        tresholds = InfinitesimalSort().thresholds(n)[1]
+    if thresholds is None:
+        thresholds = InfinitesimalSort().thresholds(n)[1]
 
     for ni in arr:
-        idx = index_from_thresholds(tresholds, ni)
+        idx = index_from_thresholds(thresholds, ni)
         # idx = [ i for i, v in enumerate(np.append([0],tresholds)) if v < ni][-1]
 
         if slots[idx] != 0:
@@ -87,16 +88,16 @@ def placeit(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
         return slots
 
 
-def quasi_sort(arr: FArray, tresholds: int | None = None) -> FArray:
+def quasi_sort(arr: FArray, thresholds: list[float] | None = None) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied,"""
     arr = np.array(arr)
     n = len(arr)
     slots = np.zeros(n)
-    if tresholds is None:
-        tresholds = InfinitesimalSort().thresholds(n)[1]
+    if thresholds is None:
+        thresholds = InfinitesimalSort().thresholds(n)[1]
 
     for i, ni in enumerate(arr):
-        idx = index_from_thresholds(tresholds, ni)
+        idx = index_from_thresholds(thresholds, ni)
         if slots[idx] != 0:
             direction = 1 if ni > slots[idx] else -1
             try:
@@ -111,16 +112,16 @@ def quasi_sort(arr: FArray, tresholds: int | None = None) -> FArray:
     return slots
 
 
-def best_quasi_sort(arr: FArray, tresholds: FArray = None, k: int = 1) -> FArray:
+def best_quasi_sort(arr: FArray, thresholds: list[float] | None = None, k: int = 1) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied,"""
     arr = np.array(arr)
     n = len(arr)
     slots = np.zeros(n)
-    if tresholds is None:
-        tresholds = InfinitesimalSort().thresholds(n)[1]
+    if thresholds is None:
+        thresholds = InfinitesimalSort().thresholds(n)[1]
 
     for i, ni in enumerate(arr):
-        idx = index_from_thresholds(tresholds, ni)
+        idx = index_from_thresholds(thresholds, ni)
         if slots[idx] != 0:
             k = slots[idx]
             slots[slots == 0] = best_quasi_sort(arr[i:], k=k)
@@ -134,7 +135,7 @@ def plot_sort_analiysis(n: int, trials: int = 500) -> None:
     from matplotlib import pyplot as plt
 
     my_random = np.random.uniform(0, 1, [trials, n])
-    tresholds = np.array(InfinitesimalSort().thresholds(n)[1])
+    tresholds = InfinitesimalSort().thresholds(n)[1]
     original_disorder = []
     disorder_after_sort = []
     disorder_after_sort_dir = []
@@ -145,7 +146,7 @@ def plot_sort_analiysis(n: int, trials: int = 500) -> None:
             np.mean(disorder(quasi_sort_dir(random, tresholds)))
         )
 
-    kargs = {"alpha": 0.5, "density": True, "bins": 20, "range": (0, 3)}
+    kargs: dict[str, Any] = {"alpha": 0.5, "density": True, "bins": 20, "range": (0, 3)}
 
     plt.hist(original_disorder, label="original", **kargs)
     plt.hist(disorder_after_sort, label="recursive", **kargs)
@@ -162,9 +163,9 @@ if __name__ == "__main__":
     trials = 100
     n = 3
     my_random = np.random.uniform(0, 1, [trials, n])
-    tresholds = np.array(InfinitesimalSort().thresholds(n)[1])
+    thresholds = InfinitesimalSort().thresholds(n)[1]
     dis = []
     for random in my_random:
-        dis.append(np.mean(disorder(best_quasi_sort(random, tresholds))))
+        dis.append(np.mean(disorder(best_quasi_sort(random, thresholds))))
     dis = np.array(dis)
     len(dis[dis == 0]) / trials

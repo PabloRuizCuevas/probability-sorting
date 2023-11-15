@@ -1,26 +1,32 @@
-from abc import abstractclassmethod
+from abc import ABCMeta, abstractmethod
 
 import numpy as np
 from matplotlib import pyplot as plt
-from sympy import Interval, Symbol, lambdify
+from sympy import Interval, Symbol, lambdify, Expr, Rational
+from functools import lru_cache
 
 n1 = Symbol("n1", domain=Interval(0, 1))  # better not here
 
 
-class StreamSort:
-    @abstractclassmethod
-    def thresholds(self, n, B=None):
+
+class StreamSort(metaclass=ABCMeta):
+
+    @abstractmethod
+    @lru_cache
+    def thresholds(self, n: int) -> tuple[list[Expr], list[float]]:
+        ...
+
+    @abstractmethod
+    @lru_cache
+    def p_distributions(self, n: int) -> list[Expr]:
         pass
 
-    @abstractclassmethod
-    def p_distributions(self, n):
+    @abstractmethod
+    @lru_cache
+    def mP(self, n: int = 1) -> float | Rational:
         pass
 
-    @abstractclassmethod
-    def mP(self, n=1):
-        pass
-
-    def plot_OSR(self, n):
+    def plot_OSR(self, n: int) -> None:
         x = range(1, n)
         prob = np.array([self.mP(i) for i in x])
 
@@ -39,7 +45,7 @@ class StreamSort:
         )
         plt.show()
 
-    def plot_partition_tree(self, n=20):
+    def plot_partition_tree(self, n:int=20) -> None:
         # plot the partition tree from 1 to  n buckets
         plt.figure(figsize=(10, 6))
         for i in range(1, n + 1):
@@ -59,7 +65,7 @@ class StreamSort:
         )
         plt.show()
 
-    def plot_strategy_domains(self, n):
+    def plot_strategy_domains(self, n: int) -> None:
         # Convert symbolic expressions to numerical functions
         functions = self.p_distributions(n)
         numerical_funcs = [lambdify(n1, func, "numpy") for func in functions]
@@ -83,7 +89,7 @@ class StreamSort:
         )
         plt.show()
 
-    def plot_strategy_domains_at_optimal_range(self, n):
+    def plot_strategy_domains_at_optimal_range(self, n:int) -> None:
         # Convert symbolic expressions to numerical functions
         functions, ranges = self.thresholds(n)
         numerical_funcs = [lambdify(n1, func, "numpy") for func in functions]

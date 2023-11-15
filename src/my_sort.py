@@ -3,6 +3,7 @@ from functools import lru_cache
 from math import comb
 from typing import TypeAlias
 
+
 import numpy as np
 import numpy.typing as npt
 from sympy import Expr, Interval, Rational, Sum, Symbol
@@ -60,15 +61,13 @@ class InfinitesimalSort(StreamSort):
         return sol
 
     @lru_cache
+    @staticmethod
     def binomial2(n: int, k: int) -> Expr:
         # this way slower but more sympy :)
         sol: Expr = density(Binomial("X", n, n1))(k)
         return sol
 
-    def naive_thresholds(self, n: int) -> FArray:
-        # naive version of thesholds
-        return np.linspace(0, 1, n - 1)
-
+    @lru_cache
     def thresholds(self, n: int) -> tuple[list[Expr], list[float]]:
         # need to take out p_distributions for lru cache, which may be important
         B = self.p_distributions(n)
@@ -84,6 +83,7 @@ class InfinitesimalSort(StreamSort):
 class NaiveInfinitesimalSort(InfinitesimalSort):
     """The naive version of infinitesimal sort, it turns out to be quite good, but ofc not optimal"""
 
+    @lru_cache
     def thresholds(self, n: int) -> tuple[list[Expr], list[float]]:
         # need to take out p_distributions for lru cache, which may be important
         B = self.p_distributions(n)
@@ -133,8 +133,8 @@ class DiscreteSort(StreamSort):
             return result
         return [simplify(r).evalf() for r in result]  # type: ignore
 
-    @lru_cache
-    def thresholds(self, n: int) -> tuple[list[Expr], list[float]]:
+
+    def thresholds(self, n: int) -> tuple[list[Expr], list[int]]:
         B = self.p_distributions(n)
         I = []
         for i in range(0, n - 1):

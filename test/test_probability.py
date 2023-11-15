@@ -8,7 +8,7 @@ test_cases = [(1, 1), (2, Rational(3, 4)), (3, Rational(377, 726))]
 
 
 @pytest.mark.parametrize("n, Prob", test_cases)
-def test_probabilities_exact(n, Prob):
+def test_probabilities_exact(n: int, Prob: float) -> None:
     optimal = InfinitesimalSort(True)
     p = optimal.mP(n)
     assert p == Prob, f"mP({n}) = {p} != {Prob}"
@@ -19,7 +19,7 @@ test_cases2 = [(1, 1), (2, 0.75), (3, 0.519283), (4, 0.3435841)]
 
 
 @pytest.mark.parametrize("n, Prob", test_cases2)
-def test_probabilities(n, Prob):
+def test_probabilities(n: int, Prob: float) -> None:
     optimal = InfinitesimalSort()
     assert (
         abs(float(optimal.mP(n)) - Prob) < err
@@ -31,7 +31,7 @@ test_cases3 = [1, 2, 3, 4]
 
 
 @pytest.mark.parametrize("n", test_cases3)
-def test_theory_with_algorithm(n):
+def test_theory_with_algorithm(n: int) -> None:
     # this test is probabilistic, maybe not the best thing... but it can fail just because of that
     l = []
     trials = 5000
