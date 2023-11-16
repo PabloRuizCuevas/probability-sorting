@@ -34,11 +34,11 @@ test_cases3 = [1, 2, 3, 4]
 def test_theory_with_algorithm(n: int) -> None:
     # this test is probabilistic, maybe not the best thing... but it can fail just because of that
     l = []
-    trials = 5000
+    trials = 10000
     optimal = InfinitesimalSort()
     thresholds = {i: optimal.thresholds(i)[1] for i in range(10)}
     arrays = np.random.uniform(0, 1, (trials, n))
-    for i, random in enumerate(arrays):
+    for random in arrays:
         try:
             a = best_quasi_sort(random, thresholds)
             l.append(a)

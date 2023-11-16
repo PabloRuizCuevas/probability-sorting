@@ -3,7 +3,6 @@ from functools import lru_cache
 from math import comb
 from typing import TypeAlias
 
-
 import numpy as np
 import numpy.typing as npt
 from sympy import Expr, Interval, Rational, Sum, Symbol
@@ -145,6 +144,9 @@ class DiscreteSort(StreamSort):
         return B, I
 
 
+# Sort algorithm
+
+
 def index_from_thresholds(tresholds: list[float], x: float) -> int:
     """returns the index of the tresholds where x is located"""
     # need to reimplement this with no for loop
@@ -163,26 +165,31 @@ def return_subarray(arr: FArray, n: float) -> tuple[FArray, float, float]:
 
 
 def best_quasi_sort(
-    arr: FArray, thresholds: dict[int, list[float]] | None = None
+    arr: FArray,
+    thresholds: dict[int, list[float]] | None = None,
+    raise_error: bool = True,
 ) -> FArray:
     """Uses tthe best possible strategy to sort, it works with probability mP(n)
     otherwise it fails to sort.
     This is far from optimized code"""
     # if not isinstance(np.array, arr):
-    arr = np.array(arr)
     n = len(arr)
     slots = np.tile(np.nan, n)
     if thresholds is None:
         sorti = InfinitesimalSort()
         thresholds = {i: sorti.thresholds(i)[1] for i in range(n + 1)}
 
-    for ni in arr:
+    for i, ni in enumerate(arr):
         sub, start, end = return_subarray(slots, ni)
         if len(sub) == 0:
-            raise ValueError("No subarray found, not optimally sortable")
-        nip = (ni - start) / (end - start)
-        idx = index_from_thresholds(thresholds[len(sub)], nip)
-        sub[idx] = ni
+            # If enters here it means it is not optimally sortable
+            if raise_error:
+                raise ValueError("No subarray found, not optimally sortable")
+            slots[np.isnan(slots)] = best_quasi_sort(arr[i:], thresholds, raise_error)
+        else:
+            nip = (ni - start) / (end - start)
+            idx = index_from_thresholds(thresholds[len(sub)], nip)
+            sub[idx] = ni
     return slots
 
 

@@ -1,4 +1,4 @@
-from typing import Type, Any, Callable
+from typing import Any, Callable, Type
 
 
 class LoggingMeta(type):

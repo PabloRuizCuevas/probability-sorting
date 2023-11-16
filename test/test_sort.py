@@ -1,12 +1,8 @@
-from typing import TypeAlias
-
 # export PYTHONPATH=$PYTHONPATH:$(pwd)
 import numpy as np
 import pytest
-from numpy import testing as npt
 
 from src.my_sort import InfinitesimalSort, best_quasi_sort, return_subarray
-
 
 optimal = InfinitesimalSort()
 nan = np.nan
@@ -17,6 +13,7 @@ test_cases = [
     ([nan, nan, 0.2, nan, 0.4, nan], 0.3, [nan], 0.2, 0.4),
     ([0.1, nan, 0.4, nan, nan, 0.8], 0.5, [nan, nan], 0.4, 0.8),
     ([nan, nan, 0.4, nan, nan, 0.8], 0.2, [nan, nan], 0.0, 0.4),
+    ([nan], 0.2, [nan], 0.0, 1.0),
 ]
 
 
@@ -71,3 +68,23 @@ def test_not_sortable(array: list[float], arr_sorted: list[float]) -> None:
         np.array_equal(best_quasi_sort(i_array, thresholds), sorted_arr)
     except ValueError:
         assert True, "we expected a not sortable array here"
+
+
+sort_cases3 = [
+    [0.1406, 0.4243, 0.967, 0.334],
+    [0.1406, 0.334],
+    [0.1406, 0.4243, 0.967, 0.334, 0.534],
+    [0.1406, 0.4243, 0.967, 0.334, 0.511, 0.534],
+    [0.506, 0.4243, 0.967],
+]
+
+
+@pytest.mark.parametrize("array", sort_cases3)
+def test_sort3(array: list[float]) -> None:
+    i_array = np.array(array)
+    sorti = InfinitesimalSort()
+    thresholds = {i: sorti.thresholds(i)[1] for i in range(10)}
+    try:
+        best_quasi_sort(i_array, thresholds, False)
+    except:
+        assert True, "This should not fail, with raise_error=False"

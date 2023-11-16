@@ -1,6 +1,8 @@
+from typing import Any, TypeAlias
+
 import numpy as np
 import numpy.typing as npt
-from typing import TypeAlias, Any
+
 from src.my_sort import InfinitesimalSort
 
 FArray: TypeAlias = npt.NDArray[np.float64]

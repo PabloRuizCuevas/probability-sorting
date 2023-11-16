@@ -1,10 +1,10 @@
 from abc import ABCMeta, abstractmethod
+from functools import lru_cache
+from typing import Any
 
 import numpy as np
 from matplotlib import pyplot as plt
-from sympy import Interval, Symbol, lambdify, Expr, Rational
-from functools import lru_cache
-from typing import Any
+from sympy import Expr, Interval, Rational, Symbol, lambdify
 
 n1 = Symbol("n1", domain=Interval(0, 1))  # better not here
 
