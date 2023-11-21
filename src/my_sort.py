@@ -164,7 +164,7 @@ def return_subarray(arr: FArray, n: float) -> tuple[FArray, float, float]:
     return arr[mini : maxi - 1], tmp[mini], tmp[maxi]
 
 
-def best_quasi_sort(
+def sort(
     arr: FArray,
     thresholds: dict[int, list[float]] | None = None,
     raise_error: bool = True,
@@ -175,7 +175,7 @@ def best_quasi_sort(
     # if not isinstance(np.array, arr):
     n = len(arr)
     slots = np.tile(np.nan, n)
-    if thresholds is None:
+    if thresholds is None or len(thresholds.keys()) <= n:
         sorti = InfinitesimalSort()
         thresholds = {i: sorti.thresholds(i)[1] for i in range(n + 1)}
 
@@ -185,7 +185,8 @@ def best_quasi_sort(
             # If enters here it means it is not optimally sortable
             if raise_error:
                 raise ValueError("No subarray found, not optimally sortable")
-            slots[np.isnan(slots)] = best_quasi_sort(arr[i:], thresholds, raise_error)
+            slots[np.isnan(slots)] = sort(arr[i:], thresholds, raise_error)
+            break
         else:
             nip = (ni - start) / (end - start)
             idx = index_from_thresholds(thresholds[len(sub)], nip)

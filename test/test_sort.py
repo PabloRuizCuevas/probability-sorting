@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from src.my_sort import InfinitesimalSort, best_quasi_sort, return_subarray
+from src.my_sort import InfinitesimalSort, sort, return_subarray
 
 optimal = InfinitesimalSort()
 nan = np.nan
@@ -41,8 +41,8 @@ def test_sorting(array: list[float], arr_sorted: list[float]) -> None:
     i_array = np.array(array)
     i_sorted = np.array(arr_sorted)
     sorti = InfinitesimalSort()
-    thresholds = {i: sorti.thresholds(i)[1] for i in range(10)}
-    assert np.array_equal(best_quasi_sort(i_array, thresholds), i_sorted)
+    thresholds = {i: sorti.thresholds(i)[1] for i in range(5)}
+    assert np.array_equal(sort(i_array, thresholds), i_sorted)
 
 
 sort_cases2 = [([0.1406, 0.4243, 0.967, 0.334], [0.1406, 0.334, 0.4243, 0.967])]
@@ -52,39 +52,46 @@ sort_cases2 = [([0.1406, 0.4243, 0.967, 0.334], [0.1406, 0.334, 0.4243, 0.967])]
 def test_sorting_2(array: list[float], arr_sorted: list[float]) -> None:
     i_array = np.array(array)
     i_sorted = np.array(arr_sorted)
-    assert np.array_equal(best_quasi_sort(i_array), i_sorted)
+    assert np.array_equal(sort(i_array), i_sorted)
 
 
-sort_cases = [([0.1406, 0.4243, 0.967, 0.534], [0.1406, 0.4243, 0.534, 0.967])]
+sort_cases = [
+    [0.1406, 0.4243, 0.967, 0.534], 
+    [0.1406, 0.4243, 0.534, 0.967],
+    [0.76931784, 0.06506234, 0.04066391, 0.70643678, 0.34615554]
+]
 
 
-@pytest.mark.parametrize("array, arr_sorted", sort_cases)
-def test_not_sortable(array: list[float], arr_sorted: list[float]) -> None:
+@pytest.mark.parametrize("array", sort_cases)
+def test_not_sortable(array: list[float]) -> None:
     i_array = np.array(array)
-    sorted_arr = np.array(arr_sorted)
     sorti = InfinitesimalSort()
-    thresholds = {i: sorti.thresholds(i)[1] for i in range(10)}
+    thresholds = {i: sorti.thresholds(i)[1] for i in range(5)}
     try:
-        np.array_equal(best_quasi_sort(i_array, thresholds), sorted_arr)
+        sort(i_array, thresholds)
+        assert False, "This should fail, with raise_error=True"
     except ValueError:
-        assert True, "we expected a not sortable array here"
+        print("all good we expected a not sortable array here")
 
 
-sort_cases3 = [
+sort_casess = [
     [0.1406, 0.4243, 0.967, 0.334],
     [0.1406, 0.334],
     [0.1406, 0.4243, 0.967, 0.334, 0.534],
     [0.1406, 0.4243, 0.967, 0.334, 0.511, 0.534],
     [0.506, 0.4243, 0.967],
+    [0.76931784, 0.06506234, 0.04066391, 0.70643678, 0.34615554],
+    [0.76931784, 0.06506234, 0.04066391, 0.70643678, 0.34615554, 0.54615554],
 ]
 
 
-@pytest.mark.parametrize("array", sort_cases3)
-def test_sort3(array: list[float]) -> None:
+@pytest.mark.parametrize("array", sort_casess)
+def test_more_sortable(array: list[float]) -> None:
     i_array = np.array(array)
     sorti = InfinitesimalSort()
-    thresholds = {i: sorti.thresholds(i)[1] for i in range(10)}
+    thresholds = {i: sorti.thresholds(i)[1] for i in range(7)}
     try:
-        best_quasi_sort(i_array, thresholds, False)
+        sort(i_array, thresholds, False)
     except:
-        assert True, "This should not fail, with raise_error=False"
+        assert False, "This should not fail, with raise_error=False"
+

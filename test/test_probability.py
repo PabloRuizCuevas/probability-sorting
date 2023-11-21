@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from sympy import Rational
 
-from src.my_sort import InfinitesimalSort, best_quasi_sort
+from src.my_sort import InfinitesimalSort, sort
 
 test_cases = [(1, 1), (2, Rational(3, 4)), (3, Rational(377, 726))]
 
@@ -33,6 +33,7 @@ test_cases3 = [1, 2, 3, 4]
 @pytest.mark.parametrize("n", test_cases3)
 def test_theory_with_algorithm(n: int) -> None:
     # this test is probabilistic, maybe not the best thing... but it can fail just because of that
+    # ideally you put here a while and a epsilon, but would need to put a couple of conditions
     l = []
     trials = 10000
     optimal = InfinitesimalSort()
@@ -40,7 +41,7 @@ def test_theory_with_algorithm(n: int) -> None:
     arrays = np.random.uniform(0, 1, (trials, n))
     for random in arrays:
         try:
-            a = best_quasi_sort(random, thresholds)
+            a = sort(random, thresholds)
             l.append(a)
         except:
             pass

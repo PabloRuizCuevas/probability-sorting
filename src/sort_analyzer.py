@@ -91,7 +91,10 @@ def placeit(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
 
 
 def quasi_sort(arr: FArray, thresholds: list[float] | None = None) -> FArray:
-    """Uses thresholds to sort the array into slots, if slot occupied,"""
+    """Uses thresholds to sort the array into slots, if slot occupied,
+    this function tries to directly place, it fails it goes right and left looking for placing
+    the element
+    if element cannot be placed, then it uses the empty slots as the full array to sort"""
     arr = np.array(arr)
     n = len(arr)
     slots = np.zeros(n)
@@ -114,10 +117,14 @@ def quasi_sort(arr: FArray, thresholds: list[float] | None = None) -> FArray:
     return slots
 
 
-def best_quasi_sort(
+def quasi_sort_two(
     arr: FArray, thresholds: list[float] | None = None, k: int = 1
 ) -> FArray:
-    """Uses thresholds to sort the array into slots, if slot occupied,"""
+    """Uses thresholds to sort the array into slots, if slot occupied, it uses the empty slots
+    to sort them in a recursive way,
+    
+    This is still not he best algorithm because it ignores the values on the extremes, so it does
+    not renormalize the n_m"""
     arr = np.array(arr)
     n = len(arr)
     slots = np.zeros(n)
@@ -128,14 +135,14 @@ def best_quasi_sort(
         idx = index_from_thresholds(thresholds, ni)
         if slots[idx] != 0:
             k = slots[idx]
-            slots[slots == 0] = best_quasi_sort(arr[i:], k=k)
+            slots[slots == 0] = quasi_sort_two(arr[i:], k=k)
             break
         else:
             slots[idx] = ni
     return slots
 
 
-def plot_sort_analiysis(n: int, trials: int = 500) -> None:
+def plot_sort_analysis(n: int, trials: int = 500) -> None:
     from matplotlib import pyplot as plt
 
     my_random = np.random.uniform(0, 1, [trials, n])
@@ -170,6 +177,6 @@ if __name__ == "__main__":
     thresholds = InfinitesimalSort().thresholds(n)[1]
     dis = []
     for random in my_random:
-        dis.append(np.mean(disorder(best_quasi_sort(random, thresholds))))
+        dis.append(np.mean(disorder(quasi_sort_two(random, thresholds))))
     dis = np.array(dis)
     len(dis[dis == 0]) / trials
