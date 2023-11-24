@@ -164,6 +164,12 @@ def return_subarray(arr: FArray, n: float) -> tuple[FArray, float, float]:
     return arr[mini : maxi - 1], tmp[mini], tmp[maxi]
 
 
+def create_thresholds(n: int) -> dict[int, list[float]]:
+    """creates the thresholds for each n"""
+    return {i: InfinitesimalSort().thresholds(i)[1] for i in range(n + 1)}
+
+
+
 def sort(
     arr: FArray,
     thresholds: dict[int, list[float]] | None = None,
@@ -176,8 +182,7 @@ def sort(
     n = len(arr)
     slots = np.tile(np.nan, n)
     if thresholds is None or len(thresholds.keys()) <= n:
-        sorti = InfinitesimalSort()
-        thresholds = {i: sorti.thresholds(i)[1] for i in range(n + 1)}
+        thresholds = create_thresholds(n)
 
     for i, ni in enumerate(arr):
         sub, start, end = return_subarray(slots, ni)

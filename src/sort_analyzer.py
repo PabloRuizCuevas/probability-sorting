@@ -3,7 +3,7 @@ from typing import Any, TypeAlias
 import numpy as np
 import numpy.typing as npt
 
-from src.my_sort import InfinitesimalSort
+from src.my_sort import InfinitesimalSort, index_from_thresholds, create_thresholds
 
 FArray: TypeAlias = npt.NDArray[np.float64]
 
@@ -26,6 +26,10 @@ def measure_disorder(arr: FArray) -> tuple[float, float, float]:
     return average_distance, max_distance, median_distance
 
 
+
+# -------------------------# from here DEPRECATED # -------------------------#
+
+
 def placeit_dir(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
     if idx in [-1, len(slots)]:
         # reached the end of the array change direction
@@ -38,13 +42,6 @@ def placeit_dir(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
         slots[idx] = ni
     return slots
 
-
-def index_from_thresholds(thresholds: list[float], x: float) -> int:
-    # need to reimplement this with no for loop
-    for i, lim in enumerate(thresholds):
-        if x < lim:
-            return i
-    return len(thresholds)
 
 
 def quasi_sort_dir(arr: FArray, thresholds: list[float] | None = None) -> FArray:
@@ -72,6 +69,7 @@ def quasi_sort_dir(arr: FArray, thresholds: list[float] | None = None) -> FArray
 
 
 # almost the best algorithm, but still not aligned with theoretical best.
+
 
 
 def placeit(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
@@ -116,30 +114,46 @@ def quasi_sort(arr: FArray, thresholds: list[float] | None = None) -> FArray:
             slots[idx] = ni
     return slots
 
-
 def quasi_sort_two(
-    arr: FArray, thresholds: list[float] | None = None, k: int = 1
+    arr: FArray, thresholds: dict[int, list[float]] | None, k: int = 1
 ) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied, it uses the empty slots
     to sort them in a recursive way,
     
     This is still not he best algorithm because it ignores the values on the extremes, so it does
     not renormalize the n_m"""
-    arr = np.array(arr)
     n = len(arr)
     slots = np.zeros(n)
-    if thresholds is None:
-        thresholds = InfinitesimalSort().thresholds(n)[1]
+    if thresholds is None or len(thresholds.keys()) <= n:
+        thresholds = create_thresholds(n)
 
     for i, ni in enumerate(arr):
         idx = index_from_thresholds(thresholds, ni)
         if slots[idx] != 0:
             k = slots[idx]
-            slots[slots == 0] = quasi_sort_two(arr[i:], k=k)
+            slots[slots == 0] = quasi_sort_two(arr[i:], thresholds, k=k)
             break
         else:
             slots[idx] = ni
     return slots
+
+
+def quasi_sort_three(arr: FArray, thresholds: dict[int, list[float]] | None = None) -> FArray:
+    """This is similar to best algorithm but ignoring whatever is place as it would not
+    exist, so it is not optimal, but is close to optimal"""
+    n = len(arr)
+    if n == 1:
+        return arr
+    slots = np.tile(np.nan, n)
+    if thresholds is None or len(thresholds.keys()) <= n:
+        thresholds = create_thresholds(n)
+
+    element = arr[0]
+    idx = index_from_thresholds(thresholds[len(arr)], element)
+    slots[idx] = element
+    slots[np.isnan(slots)] = quasi_sort_three(arr[1:], thresholds)
+    return slots
+
 
 
 def plot_sort_analysis(n: int, trials: int = 500) -> None:
