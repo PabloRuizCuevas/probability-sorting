@@ -103,7 +103,7 @@ class DiscreteSort(StreamSort):
 
     def binomial(self, n: int, k: int) -> Expr:
         # faster that using sympy Binomial
-
+        # bad, it should be hypergeometric distribution
         # maybe something like n1/(self.maxi - n2?)
         sol: Expr = (
             comb(n, k) * (1 - n1 / self.maxi) ** (n - k) * (n1 / self.maxi) ** (k)
@@ -190,6 +190,8 @@ def sort(
             # If enters here it means it is not optimally sortable
             if raise_error:
                 raise ValueError("No subarray found, not optimally sortable")
+            # As of my resarch now, this part algorithm, i.e 
+            # when fails, it does not satisfy some desirable properties.
             slots[np.isnan(slots)] = sort(arr[i:], thresholds, raise_error)
             break
         else:
