@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from sympy import Rational
 
-from src.my_sort import InfinitesimalSort, sort
+from onsort.my_sort import InfinitesimalSort, sort
 
 test_cases = [(1, 1), (2, Rational(3, 4)), (3, Rational(377, 726))]
 

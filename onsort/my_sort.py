@@ -10,7 +10,7 @@ from sympy import integrate as ʃ
 from sympy import simplify, solve
 from sympy.stats import Binomial, density
 
-from src.plots import StreamSort
+from onsort.plots import StreamSort
 
 sys.set_int_max_str_digits(0)
 
@@ -199,6 +199,7 @@ def sort(
             idx = index_from_thresholds(thresholds[len(sub)], nip)
             sub[idx] = ni
     return slots
+
 
 
 if __name__ == "__main__":

@@ -1,29 +1,15 @@
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+  # Using this mirror lets us use mypyc-compiled black, which is about 2x faster
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 24.4.2
     hooks:
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: debug-statements
-    -   id: double-quote-string-fixer
-    -   id: name-tests-test
-    -   id: requirements-txt-fixer
--   repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v2.4.0
+      - id: black
+        language_version: python3.11
+  - repo: local
     hooks:
-    -   id: setup-cfg-fmt
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.8.0
-    hooks:
-    -   id: pyupgrade
-        args: [--py38-plus]
--   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v2.0.2
-    hooks:
-    -   id: autopep8
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.4.1
-    hooks:
-    -   id: mypy
-        additional_dependencies: [types-all, typing, dataclasses]
-        exclude: ^testing/resources/
+      - id: pytest-check
+        name: pytest-check
+        entry: poetry run pytest
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -1,28 +1,32 @@
-# How use this project with poetry
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-Poetry is a Python package manager that makes it easy to manage dependencies and create virtual environments for your Python project.
 
-To add a new dependency, run:
+# Online Optimal Sort
 
-'poetry add <package-name>´
 
-To install dependencies listed in the pyproject.toml file, run:
+## Installation
 
-'poetry install'
+Install poetry at  https://python-poetry.org/
 
-To create a virtual environment and activate it, run:
+Then run
 
-poetry shell
+> poetry config --local virtualenvs.in-project true
 
-To run a Python script within the context of the project, run:
+> poetry install
 
-arduino
+Then run (only first time):
 
-poetry run python <script-name>.py
+> git submodule update --init --recursive
 
-That's it! For more information on using Poetry, check out the official documentation.
+other times -> git submodule update --recursive --remote
+for getting last commit of submodule -> git submodule update --remote --merge
 
-# You can run the pre-commit hooks using 
 
-pre-commit install
-pre-commit run
+## Run test
+
+> poetry shell
+
+> pytest .
+
+> pytest  --cov=pytrade tests/

@@ -1,8 +1,7 @@
 # export PYTHONPATH=$PYTHONPATH:$(pwd)
 import numpy as np
+from onsort.my_sort import InfinitesimalSort, return_subarray, sort
 import pytest
-
-from src.my_sort import InfinitesimalSort, sort, return_subarray
 
 optimal = InfinitesimalSort()
 nan = np.nan

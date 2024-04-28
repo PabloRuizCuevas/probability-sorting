@@ -3,7 +3,7 @@ from typing import Any, TypeAlias
 import numpy as np
 import numpy.typing as npt
 
-from src.my_sort import InfinitesimalSort, index_from_thresholds, create_thresholds
+from onsort.my_sort import InfinitesimalSort, index_from_thresholds, create_thresholds
 
 FArray: TypeAlias = npt.NDArray[np.float64]
 

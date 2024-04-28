@@ -2,48 +2,32 @@
 name = "SOPA"
 version = "0.1.0"
 description = "SOPA Algorithm, best possible probability sorting Algorithm"
-authors = ["pablo.r.c@live.com"]
+authors = ["Pablo Ruiz <pablo.r.c@live.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python="~3.11"
+python="^3.12"
 matplotlib = "^3.7.0"
 scipy = "^1.11.3"
 sympy = "^1.12"
-pandas = "^2.1.3"
+numpy = "^1.26.4"
 
-[tool.poetry.group.test.dependencies]
-ipytest = "^0.13.3"
-pytest = "^7.4.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
-isort = "^5.12.0"
-mypy = "^1.4.1"
-validate-pyproject = "^0.13"
 pre-commit = "^3.3.3"
-coverage = "^7.3.2"
-
-[tool.poetry.group.docs.dependencies]
-jupyterlab = "^3.6.1"
+pytest = "^7.4.3"
+mypy = "^1.10.0"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.mypy]
-warn_return_any = "true"
-python_version = '3.11'
-disallow_untyped_defs = "true"
-disallow_incomplete_defs = "true"
-allow_redefinition = "true"
-exclude = ['venv']
 
-[[tool.mypy.overrides]]
-module=[
-    'setuptools.*',
-    'matplotlib.*',
-    'plots.*',
-]
-ignore_missing_imports='true'
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"] # , "--cov=pytrade"
+minversion = 7.0
+pythonpath = './'
+testpaths = 'tests'

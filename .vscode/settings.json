@@ -3,5 +3,7 @@
         "test"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "mypy.configFile": "",
+    "mypy.dmypyExecutable": " /home/pablo/Documents/code/active/sorting_algorithm/.venv/bin/mypy"
 }
