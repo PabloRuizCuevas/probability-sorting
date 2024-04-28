@@ -13,10 +13,10 @@ def sort(n_buckets: int) -> Generator[FArray, float, None]:
     """online uniform sort for n number of elements waited"""
     slots = np.tile(np.nan, n_buckets)
     n = yield slots
-    while True:
+    for _ in range(n_buckets):
         slots = sort_item(n, slots)
         n = yield slots
-
+    yield None
 
 def sort_item(n: float, slots: FArray) -> FArray:
     """ Place the nuber n in his slot,
