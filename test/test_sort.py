@@ -55,9 +55,9 @@ def test_sorting_2(array: list[float], arr_sorted: list[float]) -> None:
 
 
 sort_cases = [
-    [0.1406, 0.4243, 0.967, 0.534], 
+    [0.1406, 0.4243, 0.967, 0.534],
     [0.1406, 0.4243, 0.534, 0.967],
-    [0.76931784, 0.06506234, 0.04066391, 0.70643678, 0.34615554]
+    [0.76931784, 0.06506234, 0.04066391, 0.70643678, 0.34615554],
 ]
 
 
@@ -93,4 +93,3 @@ def test_more_sortable(array: list[float]) -> None:
         sort(i_array, thresholds, False)
     except:
         assert False, "This should not fail, with raise_error=False"
-

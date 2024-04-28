@@ -26,7 +26,6 @@ def measure_disorder(arr: FArray) -> tuple[float, float, float]:
     return average_distance, max_distance, median_distance
 
 
-
 # -------------------------# from here DEPRECATED # -------------------------#
 
 
@@ -41,7 +40,6 @@ def placeit_dir(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
     else:
         slots[idx] = ni
     return slots
-
 
 
 def quasi_sort_dir(arr: FArray, thresholds: list[float] | None = None) -> FArray:
@@ -71,7 +69,6 @@ def quasi_sort_dir(arr: FArray, thresholds: list[float] | None = None) -> FArray
 # almost the best algorithm, but still not aligned with theoretical best.
 
 
-
 def placeit(slots: FArray, idx: int, ni: float, direction: int) -> FArray:
     # tries to place it in the allowed direction, if not possible, raises error
     if idx in [-1, len(slots)]:
@@ -92,7 +89,8 @@ def quasi_sort(arr: FArray, thresholds: list[float] | None = None) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied,
     this function tries to directly place, it fails it goes right and left looking for placing
     the element
-    if element cannot be placed, then it uses the empty slots as the full array to sort"""
+    if element cannot be placed, then it uses the empty slots as the full array to sort
+    """
     arr = np.array(arr)
     n = len(arr)
     slots = np.zeros(n)
@@ -114,12 +112,13 @@ def quasi_sort(arr: FArray, thresholds: list[float] | None = None) -> FArray:
             slots[idx] = ni
     return slots
 
+
 def quasi_sort_two(
     arr: FArray, thresholds: dict[int, list[float]] | None, k: int = 1
 ) -> FArray:
     """Uses thresholds to sort the array into slots, if slot occupied, it uses the empty slots
     to sort them in a recursive way,
-    
+
     This is still not he best algorithm because it ignores the values on the extremes, so it does
     not renormalize the n_m"""
     n = len(arr)
@@ -138,7 +137,9 @@ def quasi_sort_two(
     return slots
 
 
-def quasi_sort_three(arr: FArray, thresholds: dict[int, list[float]] | None = None) -> FArray:
+def quasi_sort_three(
+    arr: FArray, thresholds: dict[int, list[float]] | None = None
+) -> FArray:
     """This is similar to best algorithm but ignoring whatever is place as it would not
     exist, so it is not optimal, but is close to optimal"""
     n = len(arr)
@@ -153,7 +154,6 @@ def quasi_sort_three(arr: FArray, thresholds: dict[int, list[float]] | None = No
     slots[idx] = element
     slots[np.isnan(slots)] = quasi_sort_three(arr[1:], thresholds)
     return slots
-
 
 
 def plot_sort_analysis(n: int, trials: int = 500) -> None:

@@ -169,7 +169,6 @@ def create_thresholds(n: int) -> dict[int, list[float]]:
     return {i: InfinitesimalSort().thresholds(i)[1] for i in range(n + 1)}
 
 
-
 def sort(
     arr: FArray,
     thresholds: dict[int, list[float]] | None = None,
@@ -190,7 +189,7 @@ def sort(
             # If enters here it means it is not optimally sortable
             if raise_error:
                 raise ValueError("No subarray found, not optimally sortable")
-            # As of my resarch now, this part algorithm, i.e 
+            # As of my resarch now, this part algorithm, i.e
             # when fails, it does not satisfy some desirable properties.
             slots[np.isnan(slots)] = sort(arr[i:], thresholds, raise_error)
             break
@@ -199,7 +198,6 @@ def sort(
             idx = index_from_thresholds(thresholds[len(sub)], nip)
             sub[idx] = ni
     return slots
-
 
 
 if __name__ == "__main__":

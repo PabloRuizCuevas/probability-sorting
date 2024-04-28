@@ -30,3 +30,18 @@ for getting last commit of submodule -> git submodule update --remote --merge
 > pytest .
 
 > pytest  --cov=pytrade tests/
+
+
+## How use:
+
+```python
+from onsort.online_sort import sort
+
+# the data can be generated randomly, comming from online stream
+arr = [0.76931784, 0.06506234, 0.07066391, 0.70643678, 0.94615554]
+sort_gen = sort(5)
+slots = next(sort_gen) # initialize generator
+for n in arr:
+    slots = sort_gen.send(n)
+    print(slots)
+```
