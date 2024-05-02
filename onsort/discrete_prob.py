@@ -1,7 +1,9 @@
 from typing import Iterator
-from sympy import Sum, Symbol, plot, solve, Float, Function
+from sympy import Sum, Symbol, floor, plot, solve, Float, Function
 from sympy.stats import Hypergeometric, density
 from functools import lru_cache
+import numpy as np
+from matplotlib import pyplot as plt
 
 
 @lru_cache
@@ -16,7 +18,7 @@ def hyp(buckets: int, items: int, bucket: int, n: int):
     return density(Hypergeometric("H", items - 1, n, trials))(bucket)
 
 
-def opt(buckets: int, items: int):
+def opt_o(buckets: int, items: int):
     """ Optimal threshold of the probability distribution,
     we are using hyp as it would be continuous which is tremendoulsy inncesary,
     but can be plotted nicely for checking what is happening"""
@@ -36,17 +38,27 @@ def opt(buckets: int, items: int):
     sols.append(items - 1)
     return sols
 
+def dist(buckets, items, n):
+    return [pnb(buckets, items, b, n) for b in range(buckets)]
+
+def all_dist(buckets, items):
+    return np.array([dist(buckets, items, i) for i in range(items)]).T
+
+def opt(buckets, items):
+    all_di = all_dist(buckets,items)
+    return [0] + [np.where(all_di[i] > all_di[i+1])[0][-1]  for i in range(buckets-1)] + [items-1]
+
 
 def int_opt(buckets: int, items: int) -> Iterator[tuple[int, int]]:
     """ convert the continoues values to int ones """
-    opts = (int(i) for i in opt(buckets, items))
+    opts = (floor(i) for i in opt(buckets, items))
     i = next(opts)
     for k in opts:
         f = k if k > i else i
         yield i, f
         i = f + 1
 
-
+@lru_cache
 def pnb(buckets:int, items:int, b:int, n:int) -> Float:
     """ Probability of winning with optimal strategy given that you place
     item at place b
@@ -97,9 +109,17 @@ def plot_p_dist(buckets: int, items: int):
     plot(*[hyp(buckets, items, b, n1) for b in range(buckets)], (n1, 0,items-1))
     
 def plot_real_p(buckets, items):
-    import numpy as np
-    from matplotlib import pyplot as plt
+
     x = np.arange(buckets)
     for i in range(items):
         y = [pnb(buckets, items, b, i) for b in range(buckets)]
         plt.plot(x, y)
+        
+def plot_p(buckets, items, lines=False):
+    all_di = all_dist(buckets,items)
+    opts = opt(buckets, items)
+    plt.plot(all_di.T)
+    if lines:
+        for op in opts:
+            plt.axvline(x=op)
+    plt.show()
