@@ -25,6 +25,7 @@ def opt(buckets: int, items: int):
     n1 = Symbol("n1")
 
     for i in range(0, buckets):
+        # this is wrong!! it should use pnb D:  !! terrible, cause it is discrete
         sol = solve(hyp(buckets, items, i, n1) - hyp(buckets, items, i + 1, n1))
         for j in sol:
             if j > current:
@@ -95,8 +96,10 @@ def plot_p_dist(buckets: int, items: int):
     n1 = Symbol("n1")
     plot(*[hyp(buckets, items, b, n1) for b in range(buckets)], (n1, 0,items-1))
     
-def plot_p_dist2(buckets: int, items: int):
-    # todo not working but ideally i want to plot this
-    assert buckets<=items, "items cannot be less than buckets"
-    n1 = Symbol("n1")
-    plot(*[pnb(buckets, items, b, n1) for b in range(buckets)], (n1, 0,items-1))
+def plot_real_p(buckets, items):
+    import numpy as np
+    from matplotlib import pyplot as plt
+    x = np.arange(buckets)
+    for i in range(items):
+        y = [pnb(buckets, items, b, i) for b in range(buckets)]
+        plt.plot(x, y)
