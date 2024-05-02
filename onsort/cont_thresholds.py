@@ -1,8 +1,7 @@
-
-'''
+"""
 Here I stored the thresholds for the continuous case till n = 10
 
-'''
+"""
 
 
 THRESHOLDS = {

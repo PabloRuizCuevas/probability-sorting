@@ -12,7 +12,7 @@ sortable_cases = [
 @pytest.mark.parametrize("array_to_sort", sortable_cases)
 def test_sort_gen(array_to_sort):
     sort_gen = sort(len(array_to_sort))
-    slots = next(sort_gen) # initialize generator
+    slots = next(sort_gen)  # initialize generator
     for n in array_to_sort:
         slots = sort_gen.send(n)
         print(slots)

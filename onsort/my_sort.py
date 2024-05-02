@@ -28,8 +28,8 @@ class InfinitesimalSort(StreamSort):
     def mP(self, n: int = 1) -> float | Rational:
         # if n> 9  better using rational = False, otherwise it takes ages
         # as the integrals are symbolic and makes gdc of very large fractions
-        # further optimization can be achieved by using symetry, as the inthegral
-        # evaluate symetrically in the array.
+        # further optimization can be achieved by using symmetry, as the integral
+        # evaluate symetrically in the array, same for thresholds
         probability: float | Rational
         if n in [0, 1, 2]:
             probability = [1, 1, Rational(3, 4)][n]
@@ -92,56 +92,6 @@ class NaiveInfinitesimalSort(InfinitesimalSort):
 
 # seems constains do not work very well,
 # n1 = Symbol('n1', domain=Interval(0,maxi)) # integer=True, positive=True, bounded=True,
-
-
-class DiscreteSort(StreamSort):
-    """it is still bad as maxi should be dinamically calculated"""
-
-    def __init__(self, maxi: int = 1000, rational: bool = False):
-        self.maxi = maxi
-        self.rational = rational
-
-    def binomial(self, n: int, k: int) -> Expr:
-        # faster that using sympy Binomial
-        # bad, it should be hypergeometric distribution
-        # maybe something like n1/(self.maxi - n2?)
-        sol: Expr = (
-            comb(n, k) * (1 - n1 / self.maxi) ** (n - k) * (n1 / self.maxi) ** (k)
-        )
-        return sol
-
-    @lru_cache
-    def mP(self, n: int = 1) -> float | Rational:
-        if n in [0, 1]:
-            return [1, 1][n]
-
-        B, I = self.thresholds(n)
-        I = [0] + I + [self.maxi]
-        sol: float | Rational = simplify(
-            sum([Sum(B[i], (n1, I[i] + 1, I[i + 1])) for i in range(n)]) / self.maxi
-        )  # type: ignore
-        return sol
-
-    @lru_cache
-    def p_distributions(self, n: int) -> list[Expr]:
-        # n is the number of boxes
-        result = [
-            self.binomial(n - 1, i) * self.mP(n - 1 - i) * self.mP(i) for i in range(n)
-        ]
-        if self.rational:  # not sure if needed anymore
-            return result
-        return [simplify(r).evalf() for r in result]  # type: ignore
-
-    def thresholds(self, n: int) -> tuple[list[Expr], list[int]]:
-        B = self.p_distributions(n)
-        I = []
-        for i in range(0, n - 1):
-            #  should be reduce_inequalities with constrains but do not work well
-            sol = solve(B[i + 1] - B[i], n1, rational=self.rational)
-            sol = sol[1] if sol[0] == 0 else sol[0]
-            sol = int(sol)
-            I.append(sol)
-        return B, I
 
 
 # Sort algorithm
