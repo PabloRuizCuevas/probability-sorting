@@ -8,7 +8,6 @@ import numpy.typing as npt
 from sympy import Expr, Interval, Rational, Sum, Symbol
 from sympy import integrate as ʃ
 from sympy import simplify, solve
-from sympy.stats import Binomial, density
 
 from onsort.plots import StreamSort
 
@@ -57,13 +56,7 @@ class InfinitesimalSort(StreamSort):
         # faster that using sympy Binomial
         # n1 is prob of success tha is integrated latter
         sol: Expr = comb(n, k) * (1 - n1) ** (n - k) * n1 ** (k)
-        return sol
-
-    @lru_cache
-    @staticmethod
-    def binomial2(n: int, k: int) -> Expr:
-        # this way slower but more sympy :)
-        sol: Expr = density(Binomial("X", n, n1))(k)
+        # density(Binomial("X", n, n1))(k) #sympy version
         return sol
 
     @lru_cache
