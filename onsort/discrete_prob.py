@@ -103,23 +103,3 @@ def P_print():
             (b1, 0, buckets-1))
     return s / items
 
-def plot_p_dist(buckets: int, items: int):
-    assert buckets<=items, "items cannot be less than buckets"
-    n1 = Symbol("n1")
-    plot(*[hyp(buckets, items, b, n1) for b in range(buckets)], (n1, 0,items-1))
-    
-def plot_real_p(buckets, items):
-
-    x = np.arange(buckets)
-    for i in range(items):
-        y = [pnb(buckets, items, b, i) for b in range(buckets)]
-        plt.plot(x, y)
-        
-def plot_p(buckets, items, lines=False):
-    all_di = all_dist(buckets,items)
-    opts = opt(buckets, items)
-    plt.plot(all_di.T)
-    if lines:
-        for op in opts:
-            plt.axvline(x=op)
-    plt.show()
