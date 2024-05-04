@@ -1,4 +1,5 @@
 
+from itertools import pairwise
 import sys
 from functools import lru_cache
 from math import comb
@@ -15,33 +16,33 @@ RATIONAL = True
 def p_distributions(buckets: int) -> list[Expr]:
     """ n is the number of boxes """ 
     n1 = Symbol("n1", domain=Interval(0, 1))
-    
     result = [binomial(buckets - 1, b, n1) * P(buckets - 1 - b) * P(b) for b in range(buckets)]
-    if RATIONAL:
-        return result
-    return [r.evalf() for r in result]
+    return result if RATIONAL else [r.evalf() for r in result]
 
 @staticmethod
 def binomial(buckets: int, k: int, n: float) -> Expr: 
     # n successes over k trials
     # faster that using sympy Binomial
     # n1 is prob of success tha is integrated latter
-    sol: Expr = comb(buckets, k) * (1 - n) ** (buckets - k) * n ** (k)
-    # density(Binomial("X", n, n1))(k) #sympy version
-    return sol
+    return comb(buckets, k) * (1 - n) ** (buckets - k) * n ** (k)
 
 @lru_cache
 def thresholds(buckets: int) -> tuple[list[Expr], list[float]]:
     # need to take out p_distributions for lru cache, which may be important
-    B = p_distributions(buckets)
-    I = [0]
-    for i in range(0, buckets - 1):
-        sol = solve(B[i + 1] - B[i])
+    dist = p_distributions(buckets)
+    t = [0]
+    for sol in [solve(i-j) for i,j in pairwise(dist)]:
         sol = sol[1] if sol[0] == 0 else sol[0]
-        sol = sol if RATIONAL else sol.evalf()
-        I.append(sol)
-    I.append(1)
-    return B, I
+        t.append(sol if RATIONAL else sol.evalf())
+    t.append(1)
+    return t, dist
+
+def threshold(buckets, b):
+    n1 = Symbol("n1", domain=Interval(0, 1))
+    dist0 = binomial(buckets - 1, b, n1) * P(buckets - 1 - b) * P(b)
+    dist1 = binomial(buckets - 1, b+1, n1) * P(buckets - 1 - b+1) * P(b+1)
+    solve(dist0-dist1)
+    return solve(dist0-dist1) 
 
 @lru_cache
 def P(buckets: int = 1) -> float | Rational:
@@ -50,11 +51,9 @@ def P(buckets: int = 1) -> float | Rational:
     # further optimization can be achieved by using symmetry, as the integral
     # evaluate symetrically in the array, same for thresholds
     
-    probability: float | Rational
     if buckets in [0, 1, 2]:
-        probability = [1, 1, Rational(3, 4)][buckets]
+        return [1, 1, Rational(3, 4)][buckets]
     else:
         B, I = thresholds(buckets)
         # maybe a base transformation avoid the gdc as well
-        probability = sum(ʃ(B[b], (I[b], I[b + 1])) for b in range(buckets))
-    return probability
+        return sum(ʃ(B[b], (I[b], I[b + 1])) for b in range(buckets))
