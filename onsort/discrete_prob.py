@@ -1,17 +1,24 @@
 from sympy import Float
-from sympy.stats import Hypergeometric, density
-from functools import lru_cache
+from functools import cache
 import numpy as np
+import math
+from sympy.stats import Hypergeometric, density
+
+@cache
+def comb(n,k):
+    # this optimization doesn't save that much time
+    return math.comb(n,k)
+
+def hyper(k, M, n, N):
+    """ faster implementation I could do for hypergeometrical """
+    return comb(n, k) * comb(M - n, N - k) / comb(M, N)
 
 
-@lru_cache
-def hyp(buckets: int, items: int, bucket: int, n: int) -> Float:
-    """
-    Probabilty of getting the correct distribution:
-        /= bucket
-    [_][n][_]  items 0...n...items
-    ^buckets^
-    """
+# Not needed functions:
+
+
+def hyp_sym(buckets: int, items: int, bucket: int, n: int) -> Float:
+    """ Use this if you want exact solutions, no float arithmetic"""
     trials = buckets - 1
     return density(Hypergeometric("H", items - 1, n, trials))(bucket)
 
@@ -21,7 +28,29 @@ def dist(buckets: int, items: int, n: int) -> list:
     return [pnb(buckets, items, b, n) for b in range(buckets)]
 
 
-def distn(buckets: int, items: int, b: int) -> list:
+def pnb_sim(buckets: int, items: int, b: int, n: int) -> Float:
+    """Same as pnb but exploiting symmetries, use if cache is used"""
+    if ((buckets - b - 1) < b) or ((items - n - 1) < items):
+        return pnb(buckets, items, buckets - b - 1, items - n - 1)
+    return pnb(buckets, items, b, n)
+
+
+# Actual algorithm:
+
+
+def hyp(buckets: int, items: int, bucket: int, n: int) -> float:
+    """
+    Probabilty of getting the correct distribution:
+        /= bucket
+    [_][n][_]  items 0...n...items
+    ^buckets^
+
+    trials = buckets - 1
+    """
+    return hyper(bucket, items - 1, n, buckets - 1)
+
+
+def distn(buckets: int, items: int, b: int) -> list[float]:
     """Probabiliby of winning for each possible item when placed in the bucket b"""
     return [pnb(buckets, items, b, n) for n in range(items)]
 
@@ -31,26 +60,22 @@ def all_dist(buckets: int, items: int) -> np.ndarray:
     return np.array([distn(buckets, items, i) for i in range(buckets)])
 
 
-@lru_cache
 def best_bucket_for_item(buckets: int, items: int) -> np.ndarray:
-    """Brute forces the best bucket to place the each item, 
+    """Brute forces the best bucket to place the each item,
     Technically may be possible to get it in a smarter or even analytical way.
     """
     return np.argmax(all_dist(buckets, items), axis=0)  # brute force
 
 
-@lru_cache
-def pnb(buckets: int, items: int, b: int, n: int) -> Float:
+def pnb(buckets: int, items: int, b: int, n: int) -> float:
     """PNB -> Probability of winning by placing the item N in bucket B"""
     return hyp(buckets, items, b, n) * P(b, n) * P(buckets - 1 - b, items - n - 1)
 
 
-@lru_cache
-def P(buckets: int, items: int) -> Float:
+@cache
+def P(buckets: int, items: int) -> float:
     """Calculates The probability of winning with optimal strategy for
     buckets and items
-
-    For instance:s
 
     buckets = 2, items = 3
     [_][_]  0,1,2  P-> 5/6 , 0,2 you win allways by placing it in extrem, 1 you win 1/2 times
@@ -58,6 +83,7 @@ def P(buckets: int, items: int) -> Float:
     buckets = 4, items = 4
     [_][_][_][_]  0,1,2,3  P -> 1 as you only need to place each at index
     """
+    # print(f"P({buckets}, {items})")
     if buckets in (0, 1):
         return 1
     if items <= buckets:
@@ -65,3 +91,12 @@ def P(buckets: int, items: int) -> Float:
 
     best_b = best_bucket_for_item(buckets, items)  # brute force
     return sum(pnb(buckets, items, best_b[n], n) for n in range(items)) / items
+
+
+if __name__ == "__main__":
+    import time
+    start = time.time()
+    p = P(20, 999)
+    print(f"P20 = {p}")
+    end = time.time()
+    print(end - start)

@@ -195,3 +195,39 @@ def sort(
 
 if __name__ == "__main__":
     print(InfinitesimalSort().mP(6))
+
+
+# Find algo for optimize for all metrics.
+
+# [1,5,3,8,6,0,4]
+
+# Algo x -> y
+
+[0, 1, 3, 4, 5, 8, 6]  # output
+[0, 0, 0, 0, 0, 1, 1]  # ->2/7
+[0, 1, 3, 4, 5, 6, 8]  # perfection
+
+# 0-1 # we know the distribution.
+
+# [0.1][_]    0.1 # E[avg distance|n1=0.1] -> 0.1
+# you have 0.1 if smaller -> 2
+# and 90% is bigger -> 0      avg dist = 0.2
+
+# n2 = 0.05      [0.1][0.05]
+#                [0.05][0.1]  # only had 0.1% this happened
+#              d   [1]  [1]
+
+#                               P1     P1        P2
+#  [0.1][_][_]                 [_][0.1][_]    [_][_][0.1]
+#  P of having 2n>0.1       P of having n>0.1 and n<0.1    P()*P()
+#
+
+
+# binomial is not needed anymore!
+# [_][0.2][_]
+
+
+# sum int  from smthg to smght  f(x) P()*P() #
+
+
+# [][] 0-1   0-100
