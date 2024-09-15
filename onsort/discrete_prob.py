@@ -83,7 +83,7 @@ def P(buckets: int, items: int) -> float:
     buckets = 4, items = 4
     [_][_][_][_]  0,1,2,3  P -> 1 as you only need to place each at index
     """
-    # print(f"P({buckets}, {items})")
+    print(f"P({buckets}, {items})")
     if buckets in (0, 1):
         return 1
     if items <= buckets:

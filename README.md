@@ -4,32 +4,8 @@
 
 # Online Optimal Sort
 
+Onsort is a small library providing utilities for online ranking (sorting) numbers comming from a know distribution at random.
 
-## Installation
-
-Install poetry at  https://python-poetry.org/
-
-Then run
-
-> poetry config --local virtualenvs.in-project true
-
-> poetry install
-
-Then run (only first time):
-
-> git submodule update --init --recursive
-
-other times -> git submodule update --recursive --remote
-for getting last commit of submodule -> git submodule update --remote --merge
-
-
-## Run test
-
-> poetry shell
-
-> pytest .
-
-> pytest  --cov=pytrade tests/
 
 
 ## How use:
@@ -45,3 +21,14 @@ for n in arr:
     slots = sort_gen.send(n)
     print(slots)
 ```
+
+
+
+
+## Run test
+
+> poetry shell
+
+> pytest .
+
+> pytest  --cov=pytrade tests/

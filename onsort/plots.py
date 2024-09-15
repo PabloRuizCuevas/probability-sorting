@@ -56,6 +56,10 @@ class StreamSort(metaclass=ABCMeta):
         plt.xticks(np.arange(0, 1.1, 0.1))
         plt.yticks(np.arange(0, n + 1, 1))
         plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+        import matplotlib2tikz
+
+        matplotlib2tikz.save("test.tex")
+
         plt.savefig(
             f"figures/{self.__class__.__name__}_tree_{n}.png",
             dpi=300,
@@ -80,6 +84,9 @@ class StreamSort(metaclass=ABCMeta):
         plt.title("$p_{nk}$ for 7 slots")
         plt.legend([f"$p_{{n{i}}}$" for i in range(1, n + 1)])
         plt.grid(True)
+        import tikzplotlib
+
+        tikzplotlib.save("test.tex")
         plt.savefig(
             f"figures/{self.__class__.__name__}_domains_{n}.png",
             dpi=300,
