@@ -1,38 +1,19 @@
-from sympy import Float
+from sympy import Float, Integer
 from functools import cache
 import numpy as np
 import math
 from sympy.stats import Hypergeometric, density
 
+
 @cache
-def comb(n,k):
+def comb(n, k):
     # this optimization doesn't save that much time
-    return math.comb(n,k)
+    return math.comb(n, k)
+
 
 def hyper(k, M, n, N):
-    """ faster implementation I could do for hypergeometrical """
+    """faster implementation I could do for hypergeometrical"""
     return comb(n, k) * comb(M - n, N - k) / comb(M, N)
-
-
-# Not needed functions:
-
-
-def hyp_sym(buckets: int, items: int, bucket: int, n: int) -> Float:
-    """ Use this if you want exact solutions, no float arithmetic"""
-    trials = buckets - 1
-    return density(Hypergeometric("H", items - 1, n, trials))(bucket)
-
-
-def dist(buckets: int, items: int, n: int) -> list:
-    """Probabiliby of winning for each bucket by placing the first element n on it"""
-    return [pnb(buckets, items, b, n) for b in range(buckets)]
-
-
-def pnb_sim(buckets: int, items: int, b: int, n: int) -> Float:
-    """Same as pnb but exploiting symmetries, use if cache is used"""
-    if ((buckets - b - 1) < b) or ((items - n - 1) < items):
-        return pnb(buckets, items, buckets - b - 1, items - n - 1)
-    return pnb(buckets, items, b, n)
 
 
 # Actual algorithm:
@@ -56,7 +37,7 @@ def distn(buckets: int, items: int, b: int) -> list[float]:
 
 
 def all_dist(buckets: int, items: int) -> np.ndarray:
-    """Probability map of winning with best possible strategy for each bucket and item"""
+    """Probability map of winning with best possible stegy for each bucket and item"""
     return np.array([distn(buckets, items, i) for i in range(buckets)])
 
 
@@ -85,7 +66,7 @@ def P(buckets: int, items: int) -> float:
     """
     print(f"P({buckets}, {items})")
     if buckets in (0, 1):
-        return 1
+        return Integer(1)
     if items <= buckets:
         return 1
 
@@ -95,8 +76,9 @@ def P(buckets: int, items: int) -> float:
 
 if __name__ == "__main__":
     import time
+
     start = time.time()
-    p = P(20, 999)
+    p = P(10, 999)
     print(f"P20 = {p}")
     end = time.time()
     print(end - start)

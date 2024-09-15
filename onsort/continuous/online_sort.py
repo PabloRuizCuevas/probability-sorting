@@ -2,8 +2,8 @@ from typing import Generator, TypeAlias
 import numpy as np
 import numpy.typing as npt
 
-from onsort.cont_thresholds import THRESHOLDS
-from onsort.my_sort import index_from_thresholds, return_subarray
+from onsort.continuous.cont_thresholds import THRESHOLDS
+from onsort.continuous.my_sort import index_from_thresholds, return_subarray
 
 
 FArray: TypeAlias = npt.NDArray[np.float64]

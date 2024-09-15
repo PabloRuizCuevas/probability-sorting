@@ -11,8 +11,6 @@ matplotlib = "^3.7.0"
 scipy = "^1.11.3"
 sympy = "^1.12"
 numpy = "^1.26.4"
-matplotlib2tikz = "^0.7.6"
-tikzplotlib = "^0.10.1"
 
 
 [tool.poetry.group.dev.dependencies]

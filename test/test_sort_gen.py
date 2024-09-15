@@ -1,5 +1,5 @@
 import pytest
-from onsort.online_sort import sort
+from onsort.continuous.online_sort import sort
 
 
 sortable_cases = [

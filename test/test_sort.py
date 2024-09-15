@@ -1,9 +1,9 @@
 # export PYTHONPATH=$PYTHONPATH:$(pwd)
 import numpy as np
-from onsort.my_sort import InfinitesimalSort, return_subarray, sort
+from onsort.continuous.my_sort import return_subarray, sort
 import pytest
+from onsort.continuous.cont_prob import Pn, thresholds
 
-optimal = InfinitesimalSort()
 nan = np.nan
 
 test_cases = [
@@ -39,8 +39,7 @@ sort_cases = [([0.1406, 0.4243, 0.967, 0.334], [0.1406, 0.334, 0.4243, 0.967])]
 def test_sorting(array: list[float], arr_sorted: list[float]) -> None:
     i_array = np.array(array)
     i_sorted = np.array(arr_sorted)
-    sorti = InfinitesimalSort()
-    thresholds = {i: sorti.thresholds(i)[1] for i in range(5)}
+    thresholds = {i: thresholds(i,1) for i in range(5)}
     assert np.array_equal(sort(i_array, thresholds), i_sorted)
 
 
@@ -64,8 +63,7 @@ sort_cases = [
 @pytest.mark.parametrize("array", sort_cases)
 def test_not_sortable(array: list[float]) -> None:
     i_array = np.array(array)
-    sorti = InfinitesimalSort()
-    thresholds = {i: sorti.thresholds(i)[1] for i in range(5)}
+    thresholds = {i: thresholds(1, i) for i in range(5)}
     try:
         sort(i_array, thresholds)
         assert False, "This should fail, with raise_error=True"
@@ -87,8 +85,7 @@ sort_casess = [
 @pytest.mark.parametrize("array", sort_casess)
 def test_more_sortable(array: list[float]) -> None:
     i_array = np.array(array)
-    sorti = InfinitesimalSort()
-    thresholds = {i: sorti.thresholds(i)[1] for i in range(7)}
+    thresholds = {i: thresholds(i, 1) for i in range(7)}
     try:
         sort(i_array, thresholds, False)
     except:

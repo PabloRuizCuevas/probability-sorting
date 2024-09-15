@@ -1,6 +1,7 @@
 import pytest
-from onsort.discrete_prob import P, hyp
 from sympy import Rational
+
+from onsort.discrete.discrete_prob_symb import hyp, P
 
 
 def test_p():
