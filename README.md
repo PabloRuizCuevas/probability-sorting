@@ -14,7 +14,7 @@ The library contains two modules:
 
 - Continuous: where we have the scripts for calculating the probability of winning the continous version as well as one script for sorting numbers in a random continous distriboutin from 0 to 1.
 
-- discrete: where we have a script for getting the probability for solving the original game.
+- discrete: where we have a script for getting the probability for solving the original game. We also provide as a the c++ implementation.
 
 
 As the probability can be calculated analytically the code is semi-symbolic, notice that the full symbolic solution for more than 8-10 slots can take very long time.
